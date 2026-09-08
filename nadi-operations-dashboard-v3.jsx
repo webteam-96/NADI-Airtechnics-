@@ -370,9 +370,9 @@ const ORDERS = [
     oa: "19962", epicor: "019962-3-1", sap: "SO-40211", custPo: "SR9/4020115683",
     customer: "Cochin Shipyard Limited", model: "NAF/630/150/5/21", qty: 1, amount: "2,61,990",
     insp: "Self", agent: "Satheesh Kumar R", cls: "Catalogue",
-    code: "A", drive: "Direct", legacy: "ASS/CM", lifecycle: "active", openedDays: 205,
+    code: "A", drive: "Direct", legacy: "ASS/CM", lifecycle: "active", openedDays: 118,
     payTerms: "50% advance, balance before despatch", payState: "advance-only",
-    mfgMonth: "Aug-26", revenueMonth: "Aug-26", drgRecd: "10-04-2026", drgRevised: "—",
+    mfgMonth: "Aug-26", revenueMonth: "Aug-26", drgRecd: "24-05-2026", drgRevised: "—",
     lines: [
       { epicor: "019962-1-1", model: "NAF/1050/255/6", qty: 1, checkpoint: "Assembled & tested", state: "blocked", note: "Waiting motor" },
       { epicor: "019962-2-1", model: "NAF-900-350-09", qty: 1, checkpoint: "Assembled & tested", state: "blocked", note: "Waiting motor" },
@@ -380,7 +380,7 @@ const ORDERS = [
       { epicor: "019962-6-1", model: "NAF/560/150/5", qty: 1, checkpoint: "Parts made", state: "on-track", note: "" },
       { epicor: "019962-20-1", model: "NAF/315/150/5/10", qty: 1, checkpoint: "Parts made", state: "on-track", note: "" },
     ],
-    poDate: "16-02-2026", poCleared: "01-04-2026", oaReleased: "02-04-2026", gaApproval: "18-04-2026",
+    poDate: "12-05-2026", poCleared: "20-05-2026", oaReleased: "22-05-2026", gaApproval: "05-06-2026",
     need: "30-07-2026", promise: "25-08-2026", revised: "08-09-2026",
     planMonth: "Aug-26", planWeek: "Wk-4", weight: "1,240",
     checkpoint: "Material ready", state: "blocked", stateNote: "Blocked — motor",
@@ -418,33 +418,33 @@ const ORDERS = [
       { when: "08-09-26", time: "09:15", who: "Planning — A. Nair", act: "Delivery date revised to 08-09", note: "Motor shortage. Two weeks lost waiting on Crompton.", next: "Purchase to confirm supplier date", kind: "bad" },
       { when: "25-08-26", time: "17:00", who: "System", act: "Motor became overdue", note: "Expected date passed with no receipt. Shortage raised automatically.", next: "Purchase owns the chase", kind: "bad" },
       { when: "28-07-26", time: "14:30", who: "Production — D. Shirke", act: "Casing complete", note: "All four sub-assemblies now ready.", next: "Assembly, once the motor lands", kind: "mark" },
-      { when: "18-04-26", time: "11:00", who: "Design — V. Rane", act: "GA approval received", note: "Customer approved the general arrangement.", next: "Planning to confirm the plan", kind: "" },
-      { when: "02-04-26", time: "10:20", who: "Projects — R. Mehta", act: "OA released", note: "PO cleared 01-04, OA released the next day.", next: "Design to release the drawing", kind: "mark" },
+      { when: "05-06-26", time: "11:00", who: "Design — V. Rane", act: "GA approval received", note: "Customer approved the general arrangement.", next: "Planning to confirm the plan", kind: "" },
+      { when: "22-05-26", time: "10:20", who: "Projects — R. Mehta", act: "OA released", note: "PO cleared 20-05, OA released two days later.", next: "Design to release the drawing", kind: "mark" },
     ],
   },
   {
     oa: "18616", epicor: "018616-1-1", sap: "SO-39804", custPo: "2700015204",
     customer: "Chemplast Sanmar Ltd", model: "HP-900-WP", qty: 1, amount: "7,32,734",
     insp: "Client", agent: "Rajesh C", cls: "Catalogue",
-    code: "C", drive: "Coupled", legacy: "TE", lifecycle: "aged", openedDays: 347,
+    code: "C", drive: "Coupled", legacy: "TE", lifecycle: "active", openedDays: 100,
     payTerms: "50% advance, balance before despatch", payState: "advance-only",
-    mfgMonth: "Sep-26", revenueMonth: "Sep-26", drgRecd: "25-06-2025", drgRevised: "—",
-    poDate: "16-04-2025", poCleared: "27-05-2025", oaReleased: "25-06-2025", gaApproval: "10-06-2025",
-    need: "26-09-2025", promise: "26-09-2025", revised: "30-09-2026",
+    mfgMonth: "Sep-26", revenueMonth: "Sep-26", drgRecd: "20-05-2026", drgRevised: "—",
+    poDate: "30-04-2026", poCleared: "10-05-2026", oaReleased: "20-05-2026", gaApproval: "25-05-2026",
+    need: "24-08-2026", promise: "26-08-2026", revised: "07-09-2026",
     planMonth: "Sep-26", planWeek: "Back log", weight: "2,150",
-    checkpoint: "Assembled & tested", state: "at-risk", stateNote: "Open over a year",
+    checkpoint: "Assembled & tested", state: "at-risk", stateNote: "Repeat leak — rework",
     owner: "Quality — S. Deshpande", pct: 70,
     current: "Rework after a repeat leak",
-    currentSub: "Leak returned after reassembly on 09-03. Third failure on the same unit.",
+    currentSub: "Leak returned after reassembly on 28-08. Third failure on the same unit.",
     next: "Root-cause the seal failure before another rebuild", nextOwner: "Quality", nextDue: "Overdue",
     subitems: [
-      { n: "Hub", s: "Ready", d: "20-08-2025" },
-      { n: "Shaft", s: "Ready", d: "22-08-2025" },
-      { n: "Impeller", s: "Ready", d: "01-09-2025" },
+      { n: "Hub", s: "Ready", d: "18-08-2026" },
+      { n: "Shaft", s: "Ready", d: "20-08-2026" },
+      { n: "Impeller", s: "Ready", d: "22-08-2026" },
       { n: "Casing", s: "Rework", d: "—" },
     ],
     supply: [
-      { item: "Mechanical seal (replacement)", scope: "Nadi (NM)", supplier: "Eagle Burgmann", expected: "20-02-2026", received: "18-02-2026", age: 0 },
+      { item: "Mechanical seal (replacement)", scope: "Nadi (NM)", supplier: "Eagle Burgmann", expected: "24-08-2026", received: "22-08-2026", age: 0 },
     ],
     gate: [
       { t: "Quality released", s: "fail", n: "Leak test not passed" },
@@ -454,20 +454,20 @@ const ORDERS = [
       { t: "As-built BOM frozen", s: "fail", n: "Seal part number changed, needs re-freeze" },
     ],
     exceptions: [
-      { t: "Repeat leak failure", sub: "Third leak on the same unit, detected after reassembly on 09-03-2026.", owner: "Quality", due: "Overdue", level: "risk" },
-      { t: "Order aged past a year", sub: "Promised 26-09-2025 and still open. Needs a commercial decision, not another rebuild.", owner: "Projects", due: "This week", level: "warn" },
+      { t: "Repeat leak failure", sub: "Third leak on the same unit, detected after reassembly on 28-08-2026.", owner: "Quality", due: "Overdue", level: "risk" },
+      { t: "Repeat rework — slipping", sub: "Promised 26-08, now committed 07-09. Third rework — needs a decision, not another rebuild.", owner: "Projects", due: "This week", level: "warn" },
     ],
     catch: {
-      promised: "1 × HP-900-WP to Chemplast Sanmar. Promised 26-09-2025 — more than a year open.",
-      done: "Built and tested 26-09-2025. A leak was found at the customer inspection and a new seal fitted.",
-      blocking: "The leak came back after reassembly on 09-03-2026. Third failure on the same joint.",
-      next: "Quality root-causes the seal. Projects needs a commercial decision on an order this old.",
+      promised: "1 × HP-900-WP to Chemplast Sanmar. Promised 26-08, now committed 07-09.",
+      done: "Built and tested 20-08. A leak was found at the customer inspection and a new seal fitted.",
+      blocking: "The leak came back after reassembly on 28-08-2026. Third failure on the same joint.",
+      next: "Quality root-causes the seal. Projects needs a decision before another rebuild.",
     },
     timeline: [
-      { when: "09-03-26", time: "16:40", who: "Quality — S. Deshpande", act: "Leak detected again after reassembly", note: "Third failure, same joint. Replacing the seal has not solved it.", next: "Root cause before another rebuild", kind: "bad" },
-      { when: "18-02-26", time: "10:00", who: "Stores — M. Pawar", act: "Replacement seal received", note: "Eagle Burgmann seal in stores.", next: "Production to reassemble", kind: "" },
-      { when: "26-09-25", time: "15:20", who: "Quality — S. Deshpande", act: "Leak found at customer inspection", note: "Testing completed the same day. Leak highlighted by the customer's inspector.", next: "Order a replacement seal", kind: "bad" },
-      { when: "25-06-25", time: "09:00", who: "Design — V. Rane", act: "Manufacturing drawing released", note: "", next: "Planning to load", kind: "mark" },
+      { when: "28-08-26", time: "16:40", who: "Quality — S. Deshpande", act: "Leak detected again after reassembly", note: "Third failure, same joint. Replacing the seal has not solved it.", next: "Root cause before another rebuild", kind: "bad" },
+      { when: "22-08-26", time: "10:00", who: "Stores — M. Pawar", act: "Replacement seal received", note: "Eagle Burgmann seal in stores.", next: "Production to reassemble", kind: "" },
+      { when: "20-08-26", time: "15:20", who: "Quality — S. Deshpande", act: "Leak found at customer inspection", note: "Testing completed the same day. Leak highlighted by the customer's inspector.", next: "Order a replacement seal", kind: "bad" },
+      { when: "20-05-26", time: "09:00", who: "Design — V. Rane", act: "Manufacturing drawing released", note: "", next: "Planning to load", kind: "mark" },
     ],
   },
   {
@@ -478,21 +478,21 @@ const ORDERS = [
     payTerms: "50% advance, balance before despatch", payState: "advance-only",
     mfgMonth: "Sep-26", revenueMonth: "Sep-26", drgRecd: "05-06-2026", drgRevised: "—",
     poDate: "14-05-2026", poCleared: "27-05-2026", oaReleased: "27-05-2026", gaApproval: "05-06-2026",
-    need: "28-06-2026", promise: "04-07-2026", revised: "20-09-2026",
+    need: "20-08-2026", promise: "26-08-2026", revised: "08-09-2026",
     planMonth: "Sep-26", planWeek: "Back log", weight: "680",
     checkpoint: "Material ready", state: "blocked", stateNote: "Blocked — customer motor",
     owner: "Projects — R. Mehta", pct: 55,
     current: "Waiting for the customer's motor",
-    currentSub: "Casing and impeller finished under FCP-01.07. The motor is in the customer's scope.",
-    next: "Get a despatch date from the customer", nextOwner: "Projects", nextDue: "Overdue by 66 days",
+    currentSub: "Casing and impeller finished under FCP-24.08. The motor is in the customer's scope.",
+    next: "Get a despatch date from the customer", nextOwner: "Projects", nextDue: "Overdue by 13 days",
     subitems: [
-      { n: "Hub", s: "Ready", d: "20-06-2026" },
-      { n: "Shaft", s: "Ready", d: "22-06-2026" },
-      { n: "Impeller", s: "Ready", d: "01-07-2026" },
-      { n: "Casing", s: "Ready", d: "01-07-2026" },
+      { n: "Hub", s: "Ready", d: "18-08-2026" },
+      { n: "Shaft", s: "Ready", d: "20-08-2026" },
+      { n: "Impeller", s: "Ready", d: "24-08-2026" },
+      { n: "Casing", s: "Ready", d: "24-08-2026" },
     ],
     supply: [
-      { item: "Motor 7.5 kW", scope: "Customer (CM)", supplier: "Customer scope", expected: "04-07-2026", received: null, age: 66 },
+      { item: "Motor 7.5 kW", scope: "Customer (CM)", supplier: "Customer scope", expected: "26-08-2026", received: null, age: 13 },
     ],
     gate: [
       { t: "Quality released", s: "fail", n: "Not assembled" },
@@ -502,17 +502,17 @@ const ORDERS = [
       { t: "As-built BOM frozen", s: "fail", n: "Freezes at assembly completion" },
     ],
     exceptions: [
-      { t: "Customer-scope motor not received", sub: "66 days past the promise date. The delay sits with the customer and the record should show that.", owner: "Projects", due: "Overdue", level: "risk" },
+      { t: "Customer-scope motor not received", sub: "13 days past the promise date. The delay sits with the customer and the record should show that.", owner: "Projects", due: "Overdue", level: "risk" },
     ],
     catch: {
-      promised: "1 × LVSC-900 to Ganesh Consumer Products. Promised 04-07, now committed 20-09.",
-      done: "Everything in Nadi's scope is finished — casing and impeller completed 01-07.",
-      blocking: "The motor is in the customer's scope and has not arrived. 66 days and counting.",
+      promised: "1 × LVSC-900 to Ganesh Consumer Products. Promised 26-08, now committed 08-09.",
+      done: "Everything in Nadi's scope is finished — casing and impeller completed 24-08.",
+      blocking: "The motor is in the customer's scope and has not arrived. 13 days and counting.",
       next: "Projects gets a despatch date. The delay is the customer's and the record says so.",
     },
     timeline: [
-      { when: "04-07-26", time: "18:00", who: "System", act: "Customer motor became overdue", note: "Promise date reached with no motor. Ageing from here.", next: "Projects to raise with the customer", kind: "bad" },
-      { when: "01-07-26", time: "13:10", who: "Production — D. Shirke", act: "Casing and impeller complete", note: "Finished under FCP-01.07. All Nadi-scope work done.", next: "Hold for the customer's motor", kind: "mark" },
+      { when: "26-08-26", time: "18:00", who: "System", act: "Customer motor became overdue", note: "Promise date reached with no motor. Ageing from here.", next: "Projects to raise with the customer", kind: "bad" },
+      { when: "24-08-26", time: "13:10", who: "Production — D. Shirke", act: "Casing and impeller complete", note: "Finished under FCP-24.08. All Nadi-scope work done.", next: "Hold for the customer's motor", kind: "mark" },
       { when: "27-05-26", time: "09:40", who: "Projects — R. Mehta", act: "OA released", note: "PO cleared and OA released the same day.", next: "Design to release the drawing", kind: "mark" },
     ],
   },
@@ -520,39 +520,39 @@ const ORDERS = [
     oa: "19415", epicor: "019415-2-1", sap: "SO-39912", custPo: "3693505",
     customer: "Systemair for Electrical Equipment Co", model: "Silencer", qty: 8, amount: "16,75,262",
     insp: "Self", agent: "Systemair", cls: "Catalogue",
-    code: "S", drive: "—", legacy: "PD", lifecycle: "active", openedDays: 320,
+    code: "S", drive: "—", legacy: "PD", lifecycle: "active", openedDays: 110,
     payTerms: "Advance received in full (export)", payState: "received",
-    mfgMonth: "Jul-26", revenueMonth: "Jul-26", drgRecd: "05-06-2026", drgRevised: "—",
-    poDate: "19-10-2025", poCleared: "24-10-2025", oaReleased: "02-06-2026", gaApproval: "—",
-    need: "30-06-2026", promise: "30-07-2026", revised: "30-07-2026",
-    planMonth: "Jul-26", planWeek: "Wk-1", weight: "3,400",
+    mfgMonth: "Aug-26", revenueMonth: "Aug-26", drgRecd: "22-05-2026", drgRevised: "—",
+    poDate: "01-05-2026", poCleared: "08-05-2026", oaReleased: "22-05-2026", gaApproval: "—",
+    need: "20-08-2026", promise: "26-08-2026", revised: "26-08-2026",
+    planMonth: "Aug-26", planWeek: "Wk-1", weight: "3,400",
     checkpoint: "Quality released", state: "warn", stateNote: "Billed, not moved",
     owner: "Dispatch — K. Salvi", pct: 90,
     current: "Invoiced but still in the yard",
-    currentSub: "8 units billed in July. Crate clearance was never raised.",
+    currentSub: "8 units billed in late August. Crate clearance was never raised.",
     next: "Raise crate clearance and book transport", nextOwner: "Dispatch", nextDue: "Overdue",
     subitems: [],
     supply: [],
     gate: [
-      { t: "Quality released", s: "pass", n: "Released 22-07-2026" },
+      { t: "Quality released", s: "pass", n: "Released 24-08-2026" },
       { t: "Customer inspection", s: "na", n: "Not required — inspection is Self" },
       { t: "Crate ready", s: "fail", n: "Wooden crate not raised. The only thing holding 8 units." },
-      { t: "Documents complete", s: "pass", n: "Invoice raised July 2026" },
-      { t: "As-built BOM frozen", s: "pass", n: "Frozen 22-07-2026" },
+      { t: "Documents complete", s: "pass", n: "Invoice raised August 2026" },
+      { t: "As-built BOM frozen", s: "pass", n: "Frozen 24-08-2026" },
     ],
     exceptions: [
       { t: "Billed but not moved", sub: "8 units invoiced at ₹16,75,262, sitting undispatched. Crate is the only open item.", owner: "Dispatch", due: "Overdue", level: "warn" },
-      { t: "Intake took 221 days", sub: "PO cleared 24-10-2025, OA released 02-06-2026. Seven months before work could start.", owner: "Projects", due: "Review", level: "warn" },
+      { t: "Slow to release", sub: "PO cleared 08-05, OA released 22-05. 14 days before work could start.", owner: "Projects", due: "Review", level: "warn" },
     ],
     catch: {
-      promised: "8 silencers to Systemair. Promised 30-07 and invoiced in July.",
-      done: "Built, quality released 22-07, as-built BOM frozen, invoice raised.",
+      promised: "8 silencers to Systemair. Promised 26-08 and invoiced in late August.",
+      done: "Built, quality released 24-08, as-built BOM frozen, invoice raised.",
       blocking: "Nobody raised the wooden crate. Eight finished units, ₹16.75 lakh, sitting in the yard.",
       next: "Dispatch raises crate clearance and books transport. Half a day of work.",
     },
     timeline: [
-      { when: "22-07-26", time: "16:00", who: "Quality — S. Deshpande", act: "Released for dispatch", note: "All 8 units passed. As-built BOM frozen.", next: "Dispatch to pack", kind: "mark" },
-      { when: "02-06-26", time: "10:00", who: "Projects — R. Mehta", act: "OA released", note: "PO had been cleared on 24-10-2025. 221 days between clearing and release.", next: "Planning to load", kind: "bad" },
+      { when: "24-08-26", time: "16:00", who: "Quality — S. Deshpande", act: "Released for dispatch", note: "All 8 units passed. As-built BOM frozen.", next: "Dispatch to pack", kind: "mark" },
+      { when: "22-05-26", time: "10:00", who: "Projects — R. Mehta", act: "OA released", note: "PO had been cleared on 08-05. 14 days between clearing and release.", next: "Planning to load", kind: "bad" },
     ],
   },
   {
@@ -685,14 +685,14 @@ const ORDERS = [
     ],
   },
   {
-    oa: "19449", epicor: "019449-1-1", sap: "SO-39770", custPo: "MAK/2025/077",
+    oa: "19449", epicor: "019449-1-1", sap: "SO-39770", custPo: "MAK/2026/077",
     customer: "M/s MAK Clean", model: "Oil level indicator (2 nos), bearing block", qty: 2, amount: "—",
     insp: "Self", agent: "Raja A", cls: "Catalogue",
-    code: "SERVICE", drive: "—", legacy: "SHORT", lifecycle: "active", openedDays: 260,
+    code: "SERVICE", drive: "—", legacy: "SHORT", lifecycle: "active", openedDays: 110,
     payTerms: "100% advance with PO", payState: "received",
-    mfgMonth: "Sep-26", revenueMonth: "Jul-26", drgRecd: "—", drgRevised: "—",
+    mfgMonth: "Sep-26", revenueMonth: "Aug-26", drgRecd: "—", drgRevised: "—",
     need: "—", promise: "—", revised: "—",
-    planMonth: "Jul-26", planWeek: "Short supply", weight: "0",
+    planMonth: "Aug-26", planWeek: "Short supply", weight: "0",
     checkpoint: "Material ready", state: "blocked", stateNote: "Short supply — bought-out",
     owner: "Purchase — S. Kulkarni", pct: 30,
     current: "Waiting on a bought-out spare",
@@ -700,7 +700,7 @@ const ORDERS = [
     next: "Receive the bought-out item, then pack", nextOwner: "Purchase", nextDue: "Overdue",
     subitems: [],
     supply: [
-      { item: "Oil level indicator (Dodge)", scope: "Nadi (NM)", supplier: "Dodge / local", expected: "20-07-2026", received: null, age: 50 },
+      { item: "Oil level indicator (Dodge)", scope: "Nadi (NM)", supplier: "Dodge / local", expected: "26-08-2026", received: null, age: 13 },
     ],
     gate: [
       { t: "Quality released", s: "na", n: "Bought-out spare, no build" },
@@ -719,22 +719,22 @@ const ORDERS = [
       next: "Purchase receives the items, then Dispatch packs and ships.",
     },
     timeline: [
-      { when: "20-07-26", time: "10:00", who: "Purchase — S. Kulkarni", act: "Bought-out became overdue", note: "Spare-part supply line. Ageing on the shortage list.", next: "Chase supplier", kind: "bad" },
+      { when: "26-08-26", time: "10:00", who: "Purchase — S. Kulkarni", act: "Bought-out became overdue", note: "Spare-part supply line. Ageing on the shortage list.", next: "Chase supplier", kind: "bad" },
     ],
   },
   {
-    oa: "15288", epicor: "015288-1-1", sap: "SO-33110", custPo: "ALS/2021/E-BLOCK",
+    oa: "15288", epicor: "015288-1-1", sap: "SO-33110", custPo: "ALS/2026/E-BLOCK",
     customer: "Ballestra Engineering & Projects", model: "NAF/1120-35012 (E-Block)", qty: 7, amount: "19,95,000",
     insp: "Client", agent: "Satheesh Kumar R", cls: "Project",
-    code: "A", drive: "Belt", legacy: "MFG-BL", lifecycle: "dead", openedDays: 1317,
+    code: "A", drive: "Belt", legacy: "MFG-BL", lifecycle: "dead", openedDays: 130,
     payTerms: "20% adv, 70% against readiness, 10% within 30 days", payState: "advance-only",
-    mfgMonth: "Hold", revenueMonth: "Hold", drgRecd: "11-01-2022", drgRevised: "—",
-    need: "29-01-2022", promise: "20-01-2022", revised: "20-01-2022",
+    mfgMonth: "Hold", revenueMonth: "Hold", drgRecd: "05-05-2026", drgRevised: "—",
+    need: "22-08-2026", promise: "20-08-2026", revised: "02-09-2026",
     planMonth: "Hold", planWeek: "Dead", weight: "0",
-    checkpoint: "Parts made", state: "at-risk", stateNote: "Open since 2022",
+    checkpoint: "Parts made", state: "at-risk", stateNote: "Stalled — no movement",
     owner: "Projects — R. Mehta", pct: 50,
-    current: "Dead order — open since January 2022",
-    currentSub: "6 of 7 motors received 11-01-2022, then stalled. On the sheet for 3½ years with a HOLD in every plan column.",
+    current: "Stalled order — no movement in weeks",
+    currentSub: "6 of 7 motors received 15-06, then stalled. Sitting on HOLD in every plan column since — needs a decision.",
     next: "Commercial decision — close, cancel or revive", nextOwner: "Management", nextDue: "Escalated",
     subitems: [], supply: [],
     gate: [
@@ -745,23 +745,23 @@ const ORDERS = [
       { t: "As-built BOM frozen", s: "fail", n: "—" },
     ],
     exceptions: [
-      { t: "Dead order — 3½ years open", sub: "Promised Jan-2022, still on the pending sheet as HOLD. Needs a decision, not another status update.", owner: "Management", due: "Escalated", level: "risk" },
+      { t: "Stalled order — needs a decision", sub: "Promised 20-08, no movement since. Sitting on HOLD in every plan column — needs a call, not another status update.", owner: "Management", due: "Escalated", level: "risk" },
     ],
     catch: {
-      promised: "7 × NAF/1120 to Ballestra (E-Block). Promised January 2022.",
-      done: "6 of 7 motors received 11-01-2022. Then the order stalled.",
-      blocking: "No movement for 3½ years. The order still consumes a row and a status every review.",
+      promised: "7 × NAF/1120 to Ballestra (E-Block). Promised 20-08-2026.",
+      done: "6 of 7 motors received 15-06. Then the order stalled.",
+      blocking: "No movement in weeks. The order still consumes a row and a status every review.",
       next: "Management decides: close, cancel, or formally revive with a fresh date.",
     },
     timeline: [
-      { when: "11-01-22", time: "10:00", who: "Stores", act: "6 of 7 motors received", note: "Order stalled shortly after. No movement since.", next: "Awaiting a commercial decision", kind: "bad" },
+      { when: "15-06-26", time: "10:00", who: "Stores", act: "6 of 7 motors received", note: "Order stalled shortly after. No movement since.", next: "Awaiting a commercial decision", kind: "bad" },
     ],
   },
   {
-    oa: "18902", epicor: "018902-1-1", sap: "SO-38540", custPo: "GEM/2025/C-441",
+    oa: "18902", epicor: "018902-1-1", sap: "SO-38540", custPo: "GEM/2026/C-441",
     customer: "Gemini Cooling Systems", model: "Motor pulley (replace on site)", qty: 2, amount: "—",
     insp: "Self", agent: "Raja A", cls: "Catalogue",
-    code: "SERVICE", drive: "—", legacy: "SHORT", lifecycle: "cancelled", openedDays: 190,
+    code: "SERVICE", drive: "—", legacy: "SHORT", lifecycle: "cancelled", openedDays: 120,
     payTerms: "100% advance with PO", payState: "na",
     mfgMonth: "—", revenueMonth: "—", drgRecd: "—", drgRevised: "—",
     need: "—", promise: "—", revised: "—",
@@ -796,7 +796,7 @@ const JOBS = [
   { job: "JOB-4423", oa: "20790", op: "Flange machining", section: "Machine Shop", qty: 4, done: 2, state: "In progress", by: "P. Jadhav", since: "08:15" },
   { job: "JOB-4420", oa: "20790", op: "Casing fitup & welding", section: "Fabrication", qty: 1, done: 0, state: "Ready", by: "—", since: "—" },
   { job: "JOB-4412", oa: "19962", op: "Final assembly", section: "Assembly", qty: 1, done: 0, state: "Blocked", by: "—", since: "25-08" },
-  { job: "JOB-4415", oa: "18616", op: "Seal reassembly", section: "Assembly", qty: 1, done: 0, state: "Rework", by: "—", since: "09-03" },
+  { job: "JOB-4415", oa: "18616", op: "Seal reassembly", section: "Assembly", qty: 1, done: 0, state: "Rework", by: "—", since: "28-08" },
   { job: "JOB-4421", oa: "20736", op: "Final packing", section: "Packing", qty: 1, done: 1, state: "Complete", by: "N. Gawde", since: "—" },
 ];
 
@@ -822,12 +822,12 @@ const NAV = {
 
 const ATTENTION = [
   { id: 1, roles: ["purchase", "planning", "management"], level: "risk", oa: "19962", title: "Motor 14 days overdue", sub: "15 kW from Crompton. All four sub-assemblies are ready and waiting on it.", due: "Overdue", action: "Chase supplier" },
-  { id: 2, roles: ["projects", "planning", "management"], level: "risk", oa: "20422", title: "Customer motor 66 days overdue", sub: "Motor is in the customer's scope. Nadi's work has been finished since 01-07.", due: "Overdue", action: "Raise with customer" },
+  { id: 2, roles: ["projects", "planning", "management"], level: "risk", oa: "20422", title: "Customer motor 13 days overdue", sub: "Motor is in the customer's scope. Nadi's work has been finished since 24-08.", due: "Overdue", action: "Raise with customer" },
   { id: 3, roles: ["quality", "supervisor", "management"], level: "risk", oa: "18616", title: "Third leak on the same unit", sub: "Leak returned after reassembly. Replacing the seal has not fixed it.", due: "Overdue", action: "Root cause" },
-  { id: 4, roles: ["dispatch", "management"], level: "warn", oa: "19415", title: "8 units billed but not moved", sub: "₹16,75,262 invoiced in July. Only the crate is missing.", due: "Overdue", action: "Raise crate" },
+  { id: 4, roles: ["dispatch", "management"], level: "warn", oa: "19415", title: "8 units billed but not moved", sub: "₹16,75,262 invoiced in August. Only the crate is missing.", due: "Overdue", action: "Raise crate" },
   { id: 5, roles: ["quality"], level: "warn", oa: "20790", title: "Radiography hold point due 12-09", sub: "Customer inspector needs to be on site. Fit-up cannot start until it passes.", due: "Due 12-09", action: "Schedule" },
   { id: 6, roles: ["dispatch"], level: "info", oa: "20736", title: "Ready to leave today", sub: "All five dispatch conditions met. Packed since 02-09.", due: "Due today", action: "Book transport" },
-  { id: 7, roles: ["projects", "management"], level: "warn", oa: "18616", title: "Order open for over a year", sub: "Promised 26-09-2025. Needs a commercial decision, not another rebuild.", due: "This week", action: "Review" },
+  { id: 7, roles: ["projects", "management"], level: "warn", oa: "18616", title: "Repeat leak — needs a decision", sub: "Third leak after reassembly. A call is needed, not another rebuild.", due: "This week", action: "Review" },
   { id: 8, roles: ["supervisor"], level: "warn", oa: "19962", title: "Assembly bay held since 25-08", sub: "JOB-4412 cannot start without the motor. Bay 2 idle.", due: "14 days", action: "Reassign bay" },
 ];
 
@@ -850,23 +850,23 @@ const DISCUSSIONS = {
   "18616": {
     stances: { quality: "no", projects: "thinking", planning: "thinking" },
     comments: [
-      { id: "d1", role: "quality", stance: "no", text: "Third leak on the same joint. Replacing the seal has not fixed it — I won't release another rebuild until we root-cause the failure.", when: "09-03 · 16:45" },
-      { id: "d2", role: "projects", stance: "thinking", text: "This order is over a year old. We may need a commercial decision with the customer rather than a fourth rebuild.", when: "09-03 · 17:30" },
-      { id: "d3", role: "planning", stance: "thinking", text: "Agree — holding the slot but not re-loading production until Quality closes the root cause.", when: "10-03 · 09:15" },
+      { id: "d1", role: "quality", stance: "no", text: "Third leak on the same joint. Replacing the seal has not fixed it — I won't release another rebuild until we root-cause the failure.", when: "28-08 · 16:45" },
+      { id: "d2", role: "projects", stance: "thinking", text: "This order has slipped through three rebuilds now. We may need a commercial decision with the customer rather than a fourth rebuild.", when: "28-08 · 17:30" },
+      { id: "d3", role: "planning", stance: "thinking", text: "Agree — holding the slot but not re-loading production until Quality closes the root cause.", when: "29-08 · 09:15" },
     ],
   },
   "20422": {
     stances: { projects: "no", planning: "thinking" },
     comments: [
-      { id: "d1", role: "projects", stance: "no", text: "The motor is in the customer's scope and 66 days overdue. The revised date must record the delay as theirs, not ours.", when: "04-07 · 18:10" },
-      { id: "d2", role: "planning", stance: "thinking", text: "Nadi-scope work finished 01-07. Ready to close the moment their motor lands.", when: "05-07 · 10:00" },
+      { id: "d1", role: "projects", stance: "no", text: "The motor is in the customer's scope and 13 days overdue. The revised date must record the delay as theirs, not ours.", when: "26-08 · 18:10" },
+      { id: "d2", role: "planning", stance: "thinking", text: "Nadi-scope work finished 24-08. Ready to close the moment their motor lands.", when: "27-08 · 10:00" },
     ],
   },
   "19415": {
     stances: { dispatch: "yes", management: "thinking" },
     comments: [
       { id: "d1", role: "dispatch", stance: "yes", text: "Only the wooden crate is open. Raise clearance and I can book transport for all 8 units today.", when: "05-09 · 14:20" },
-      { id: "d2", role: "management", stance: "thinking", text: "₹16.75 L billed and sitting in the yard since July. Why did crate clearance never get raised?", when: "05-09 · 15:00" },
+      { id: "d2", role: "management", stance: "thinking", text: "₹16.75 L billed and sitting in the yard since late August. Why did crate clearance never get raised?", when: "05-09 · 15:00" },
     ],
   },
   "20736": {
@@ -886,7 +886,7 @@ const DISCUSSIONS = {
   "15288": {
     stances: { management: "no", projects: "thinking" },
     comments: [
-      { id: "d1", role: "management", stance: "no", text: "Open since Jan 2022. Stop carrying it as live — either cancel it or revive it with a real date and a fresh commercial position.", when: "01-09 · 10:00" },
+      { id: "d1", role: "management", stance: "no", text: "Stalled for weeks with no movement. Stop carrying it as live — either cancel it or revive it with a real date and a fresh commercial position.", when: "01-09 · 10:00" },
       { id: "d2", role: "projects", stance: "thinking", text: "Checking whether the customer still wants the 7 units or if we scrap the WIP against the advance.", when: "02-09 · 14:15" },
     ],
   },
@@ -1406,7 +1406,7 @@ function Workspace({ order, back, role, disc, onPost }) {
                 ))}
                 {slowIntake && (
                   <div className="tiny" style={{ color: "var(--risk)", marginTop: 8 }}>
-                    221 days between PO cleared and OA released.
+                    14 days between PO cleared and OA released.
                   </div>
                 )}
               </div>
@@ -1616,7 +1616,7 @@ function Supply({ open }) {
         </table>
       </div>
       <div className="note">
-        Customer-scope items age separately. OA 20422 has waited 66 days on a motor the customer owes —
+        Customer-scope items age separately. OA 20422 has waited 13 days on a motor the customer owes —
         the record should show whose delay it is when the date is renegotiated.
       </div>
     </div>
@@ -1785,7 +1785,7 @@ function Quality({ open }) {
               <button className="link mono tiny" onClick={() => open("18616")}>OA 18616</button>
             </div>
             <div className="att-sub">
-              Failed at customer inspection 26-09-2025, seal replaced 18-02-2026, leak returned after reassembly 09-03-2026.
+              Failed at customer inspection 20-08-2026, seal replaced 22-08-2026, leak returned after reassembly 28-08-2026.
               Each failure is its own record, so the pattern is countable.
             </div>
           </div>
@@ -1844,7 +1844,7 @@ function Reports({ open }) {
         <div className="kpi"><div className="kpi-k">Order in hand</div><div className="kpi-v">₹8.20 cr</div><div className="kpi-s">Derived, not typed</div></div>
         <div className="kpi"><div className="kpi-k">Billed but not moved</div><div className="kpi-v" style={{ color: "var(--warn)" }}>₹16.75 L</div><div className="kpi-s">8 units on one order</div></div>
         <div className="kpi"><div className="kpi-k">Delivered on promise</div><div className="kpi-v">82%</div><div className="kpi-s">Last 30 days</div></div>
-        <div className="kpi"><div className="kpi-k">PO cleared to OA released</div><div className="kpi-v">34<span className="tiny muted"> days avg</span></div><div className="kpi-s">Worst case 221 days</div></div>
+        <div className="kpi"><div className="kpi-k">PO cleared to OA released</div><div className="kpi-v">9<span className="tiny muted"> days avg</span></div><div className="kpi-s">Worst case 15 days</div></div>
       </div>
 
       <div className="grid2">
