@@ -360,427 +360,54 @@ const CODE_LABEL = { A: "Axial (NAF)", C: "Centrifugal", S: "Silencer", SERVICE:
    ------------------------------------------------------------ */
 const ORDERS = [
   {
-    oa: "19962", epicor: "019962-3-1", sap: "SO-40211", custPo: "SR9/4020115683",
-    customer: "Cochin Shipyard Limited", model: "NAF/630/150/5/21", qty: 1, amount: "2,61,990",
-    insp: "Self", agent: "Satheesh Kumar R", cls: "Catalogue",
-    code: "A", drive: "Direct", legacy: "ASS/CM", lifecycle: "active", openedDays: 118,
-    payTerms: "50% advance, balance before despatch", payState: "advance-only",
-    mfgMonth: "Aug-26", revenueMonth: "Aug-26", drgRecd: "24-05-2026", drgRevised: "—",
+    oa: "18381", epicor: "018381-1-1", sap: "—", custPo: "—",
+    customer: "Taikisha Engineering India Pvt. Ltd.", model: "RBI490-840", qty: 4, amount: "—",
+    insp: "Self", agent: "—", cls: "Catalogue",
+    code: "C", drive: "Belt", legacy: "", lifecycle: "active", openedDays: 38,
+    payTerms: "—", payState: "na",
+    mfgMonth: "Sep-26", revenueMonth: "—", drgRecd: "20-08-2026", drgRevised: "—",
     lines: [
-      { epicor: "019962-1-1", model: "NAF/1050/255/6", qty: 1, checkpoint: "Assembled & tested", state: "blocked", note: "Waiting motor" },
-      { epicor: "019962-2-1", model: "NAF-900-350-09", qty: 1, checkpoint: "Assembled & tested", state: "blocked", note: "Waiting motor" },
-      { epicor: "019962-3-1", model: "NAF/630/150/5/21", qty: 1, checkpoint: "Material ready", state: "blocked", note: "This line" },
-      { epicor: "019962-6-1", model: "NAF/560/150/5", qty: 1, checkpoint: "Parts made", state: "on-track", note: "" },
-      { epicor: "019962-20-1", model: "NAF/315/150/5/10", qty: 1, checkpoint: "Parts made", state: "on-track", note: "" },
+      { epicor: "018381-1-1", model: "RBI490-840", qty: 1, promise: "16-09-2026", checkpoint: "Plan confirmed", state: "at-risk", note: "Scheduled end 29-09-2026, past the 16-09-2026 date" },
+      { epicor: "018381-2-1", model: "RBI490-840", qty: 1, promise: "10-10-2026", checkpoint: "Plan confirmed", state: "on-track", note: "Scheduled to the 10-10-2026 date" },
+      { epicor: "018381-4-1", model: "RBI490-840", qty: 1, promise: "20-10-2026", checkpoint: "Plan confirmed", state: "on-track", note: "Scheduled to the 20-10-2026 date" },
+      { epicor: "018381-11-1", model: "RBI490-840", qty: 1, promise: "30-10-2026", checkpoint: "Plan confirmed", state: "on-track", note: "Scheduled to the 30-10-2026 date" },
     ],
-    poDate: "12-05-2026", poCleared: "20-05-2026", oaReleased: "22-05-2026", gaApproval: "05-06-2026",
-    need: "30-07-2026", promise: "25-08-2026", revised: "08-09-2026",
-    planMonth: "Aug-26", planWeek: "Wk-4", weight: "1,240",
-    checkpoint: "Material ready", state: "blocked", stateNote: "Blocked — motor",
-    owner: "Purchase — S. Kulkarni", pct: 40,
-    current: "Waiting for the motor",
-    currentSub: "All four sub-assemblies finished. Motor was due 25-08 and has not arrived.",
-    next: "Confirm a delivery date with Crompton", nextOwner: "Purchase", nextDue: "Overdue by 14 days",
+    poDate: "01-08-2026", poCleared: "05-08-2026", oaReleased: "08-08-2026", gaApproval: "—",
+    need: "30-10-2026", promise: "30-10-2026", revised: "—",
+    planMonth: "Sep-26", planWeek: "Wk-2", weight: "—",
+    checkpoint: "Plan confirmed", state: "warn", stateNote: "Line 1 scheduled end past its date",
+    owner: "Planning — A. Nair", pct: 5,
+    current: "Scheduled — awaiting production start",
+    currentSub: "All four fans (RBI490-840) are scheduled on finite capacity. Line 1 is tight against its 16-09-2026 date; the later three sit within their dates.",
+    next: "Start the first manufacturing orders on the shop floor", nextOwner: "Production", nextDue: "From 08-09-2026",
     subitems: [
-      { n: "Hub", s: "Ready", d: "12-07-2026" },
-      { n: "Shaft", s: "Ready", d: "18-07-2026" },
-      { n: "Impeller", s: "Ready", d: "24-07-2026" },
-      { n: "Casing", s: "Ready", d: "28-07-2026" },
+      { n: "Impeller", s: "Scheduled", d: "—" },
+      { n: "Casing", s: "Scheduled", d: "—" },
+      { n: "Shaft", s: "Scheduled", d: "—" },
+      { n: "Hub", s: "Scheduled", d: "—" },
     ],
     supply: [
-      { item: "Motor 15 kW", scope: "Nadi (NM)", supplier: "Crompton Greaves", expected: "25-08-2026", received: null, age: 14 },
-      { item: "Bearing set", scope: "Nadi (NM)", supplier: "SKF India", expected: "20-07-2026", received: "19-07-2026", age: 0 },
+      { item: "Taper Lock Pulley 150×2A×28", scope: "Nadi (NM)", supplier: "Fenner India", expected: "20-09-2026", received: null, age: 0 },
+      { item: "Taper Lock Pulley 250×2A×90", scope: "Nadi (NM)", supplier: "Fenner India", expected: "20-09-2026", received: null, age: 0 },
+      { item: "V-Belt SPA-2500 (×2)", scope: "Nadi (NM)", supplier: "Fenner India", expected: "15-09-2026", received: null, age: 0 },
+      { item: "Sheet / Rod / Plate (raw steel)", scope: "Nadi (NM)", supplier: "JSW / Mukand", expected: "05-09-2026", received: "04-09-2026", age: 0 },
     ],
     gate: [
-      { t: "Quality released", s: "fail", n: "Cannot test without the motor" },
-      { t: "Customer inspection", s: "na", n: "Not required — inspection is Self" },
-      { t: "Crate ready", s: "fail", n: "Not raised" },
-      { t: "Documents complete", s: "pass", n: "Drawing R2 and test format ready" },
-      { t: "As-built BOM frozen", s: "fail", n: "Freezes at assembly completion" },
-    ],
-    exceptions: [
-      { t: "Motor shortage", sub: "15 kW motor expected 25-08, still not received. Delivery moved to 08-09.", owner: "Purchase", due: "Overdue 14 days", level: "risk" },
-    ],
-    catch: {
-      promised: "1 × NAF/630/150/5/21 to Cochin Shipyard. Promised 25-08, now committed 08-09.",
-      done: "All four sub-assemblies ready — hub, shaft, impeller and casing complete by 28-07.",
-      blocking: "The 15 kW motor has not arrived. It was due 25-08 and is 14 days overdue.",
-      next: "Purchase confirms a supplier date. Nothing else on this order can move until then.",
-    },
-    timeline: [
-      { when: "08-09-26", time: "09:15", who: "Planning — A. Nair", act: "Delivery date revised to 08-09", note: "Motor shortage. Two weeks lost waiting on Crompton.", next: "Purchase to confirm supplier date", kind: "bad" },
-      { when: "25-08-26", time: "17:00", who: "System", act: "Motor became overdue", note: "Expected date passed with no receipt. Shortage raised automatically.", next: "Purchase owns the chase", kind: "bad" },
-      { when: "28-07-26", time: "14:30", who: "Production — D. Shirke", act: "Casing complete", note: "All four sub-assemblies now ready.", next: "Assembly, once the motor lands", kind: "mark" },
-      { when: "05-06-26", time: "11:00", who: "Design — V. Rane", act: "GA approval received", note: "Customer approved the general arrangement.", next: "Planning to confirm the plan", kind: "" },
-      { when: "22-05-26", time: "10:20", who: "Projects — R. Mehta", act: "OA released", note: "PO cleared 20-05, OA released two days later.", next: "Design to release the drawing", kind: "mark" },
-    ],
-  },
-  {
-    oa: "18616", epicor: "018616-1-1", sap: "SO-39804", custPo: "2700015204",
-    customer: "Chemplast Sanmar Ltd", model: "HP-900-WP", qty: 1, amount: "7,32,734",
-    insp: "Client", agent: "Rajesh C", cls: "Catalogue",
-    code: "C", drive: "Coupled", legacy: "TE", lifecycle: "active", openedDays: 100,
-    payTerms: "50% advance, balance before despatch", payState: "advance-only",
-    mfgMonth: "Sep-26", revenueMonth: "Sep-26", drgRecd: "20-05-2026", drgRevised: "—",
-    poDate: "30-04-2026", poCleared: "10-05-2026", oaReleased: "20-05-2026", gaApproval: "25-05-2026",
-    need: "24-08-2026", promise: "26-08-2026", revised: "07-09-2026",
-    planMonth: "Sep-26", planWeek: "Back log", weight: "2,150",
-    checkpoint: "Assembled & tested", state: "at-risk", stateNote: "Repeat leak — rework",
-    owner: "Quality — S. Deshpande", pct: 70,
-    current: "Rework after a repeat leak",
-    currentSub: "Leak returned after reassembly on 28-08. Third failure on the same unit.",
-    next: "Root-cause the seal failure before another rebuild", nextOwner: "Quality", nextDue: "Overdue",
-    subitems: [
-      { n: "Hub", s: "Ready", d: "18-08-2026" },
-      { n: "Shaft", s: "Ready", d: "20-08-2026" },
-      { n: "Impeller", s: "Ready", d: "22-08-2026" },
-      { n: "Casing", s: "Rework", d: "—" },
-    ],
-    supply: [
-      { item: "Mechanical seal (replacement)", scope: "Nadi (NM)", supplier: "Eagle Burgmann", expected: "24-08-2026", received: "22-08-2026", age: 0 },
-    ],
-    gate: [
-      { t: "Quality released", s: "fail", n: "Leak test not passed" },
-      { t: "Customer inspection", s: "fail", n: "Required — leak was found at the last call" },
-      { t: "Crate ready", s: "na", n: "Raise after quality release" },
-      { t: "Documents complete", s: "pass", n: "Complete" },
-      { t: "As-built BOM frozen", s: "fail", n: "Seal part number changed, needs re-freeze" },
-    ],
-    exceptions: [
-      { t: "Repeat leak failure", sub: "Third leak on the same unit, detected after reassembly on 28-08-2026.", owner: "Quality", due: "Overdue", level: "risk" },
-      { t: "Repeat rework — slipping", sub: "Promised 26-08, now committed 07-09. Third rework — needs a decision, not another rebuild.", owner: "Projects", due: "This week", level: "warn" },
-    ],
-    catch: {
-      promised: "1 × HP-900-WP to Chemplast Sanmar. Promised 26-08, now committed 07-09.",
-      done: "Built and tested 20-08. A leak was found at the customer inspection and a new seal fitted.",
-      blocking: "The leak came back after reassembly on 28-08-2026. Third failure on the same joint.",
-      next: "Quality root-causes the seal. Projects needs a decision before another rebuild.",
-    },
-    timeline: [
-      { when: "28-08-26", time: "16:40", who: "Quality — S. Deshpande", act: "Leak detected again after reassembly", note: "Third failure, same joint. Replacing the seal has not solved it.", next: "Root cause before another rebuild", kind: "bad" },
-      { when: "22-08-26", time: "10:00", who: "Stores — M. Pawar", act: "Replacement seal received", note: "Eagle Burgmann seal in stores.", next: "Production to reassemble", kind: "" },
-      { when: "20-08-26", time: "15:20", who: "Quality — S. Deshpande", act: "Leak found at customer inspection", note: "Testing completed the same day. Leak highlighted by the customer's inspector.", next: "Order a replacement seal", kind: "bad" },
-      { when: "20-05-26", time: "09:00", who: "Design — V. Rane", act: "Manufacturing drawing released", note: "", next: "Planning to load", kind: "mark" },
-    ],
-  },
-  {
-    oa: "20422", epicor: "020422-2-1", sap: "SO-40188", custPo: "2100021775",
-    customer: "Ganesh Consumer Products", model: "LVSC-900", qty: 1, amount: "94,113",
-    insp: "Self", agent: "Subhamoy Sarkar", cls: "Catalogue",
-    code: "C", drive: "Direct", legacy: "FCP/CM", lifecycle: "active", openedDays: 117,
-    payTerms: "50% advance, balance before despatch", payState: "advance-only",
-    mfgMonth: "Sep-26", revenueMonth: "Sep-26", drgRecd: "05-06-2026", drgRevised: "—",
-    poDate: "14-05-2026", poCleared: "27-05-2026", oaReleased: "27-05-2026", gaApproval: "05-06-2026",
-    need: "20-08-2026", promise: "26-08-2026", revised: "08-09-2026",
-    planMonth: "Sep-26", planWeek: "Back log", weight: "680",
-    checkpoint: "Material ready", state: "blocked", stateNote: "Blocked — customer motor",
-    owner: "Projects — R. Mehta", pct: 55,
-    current: "Waiting for the customer's motor",
-    currentSub: "Casing and impeller finished under FCP-24.08. The motor is in the customer's scope.",
-    next: "Get a despatch date from the customer", nextOwner: "Projects", nextDue: "Overdue by 13 days",
-    subitems: [
-      { n: "Hub", s: "Ready", d: "18-08-2026" },
-      { n: "Shaft", s: "Ready", d: "20-08-2026" },
-      { n: "Impeller", s: "Ready", d: "24-08-2026" },
-      { n: "Casing", s: "Ready", d: "24-08-2026" },
-    ],
-    supply: [
-      { item: "Motor 7.5 kW", scope: "Customer (CM)", supplier: "Customer scope", expected: "26-08-2026", received: null, age: 13 },
-    ],
-    gate: [
-      { t: "Quality released", s: "fail", n: "Not assembled" },
+      { t: "Quality released", s: "na", n: "Not built yet" },
       { t: "Customer inspection", s: "na", n: "Not required — inspection is Self" },
       { t: "Crate ready", s: "na", n: "Raise after quality release" },
-      { t: "Documents complete", s: "pass", n: "Complete" },
-      { t: "As-built BOM frozen", s: "fail", n: "Freezes at assembly completion" },
-    ],
-    exceptions: [
-      { t: "Customer-scope motor not received", sub: "13 days past the promise date. The delay sits with the customer and the record should show that.", owner: "Projects", due: "Overdue", level: "risk" },
-    ],
-    catch: {
-      promised: "1 × LVSC-900 to Ganesh Consumer Products. Promised 26-08, now committed 08-09.",
-      done: "Everything in Nadi's scope is finished — casing and impeller completed 24-08.",
-      blocking: "The motor is in the customer's scope and has not arrived. 13 days and counting.",
-      next: "Projects gets a despatch date. The delay is the customer's and the record says so.",
-    },
-    timeline: [
-      { when: "26-08-26", time: "18:00", who: "System", act: "Customer motor became overdue", note: "Promise date reached with no motor. Ageing from here.", next: "Projects to raise with the customer", kind: "bad" },
-      { when: "24-08-26", time: "13:10", who: "Production — D. Shirke", act: "Casing and impeller complete", note: "Finished under FCP-24.08. All Nadi-scope work done.", next: "Hold for the customer's motor", kind: "mark" },
-      { when: "27-05-26", time: "09:40", who: "Projects — R. Mehta", act: "OA released", note: "PO cleared and OA released the same day.", next: "Design to release the drawing", kind: "mark" },
-    ],
-  },
-  {
-    oa: "19415", epicor: "019415-2-1", sap: "SO-39912", custPo: "3693505",
-    customer: "Systemair for Electrical Equipment Co", model: "Silencer", qty: 8, amount: "16,75,262",
-    insp: "Self", agent: "Systemair", cls: "Catalogue",
-    code: "S", drive: "—", legacy: "PD", lifecycle: "active", openedDays: 110,
-    payTerms: "Advance received in full (export)", payState: "received",
-    mfgMonth: "Aug-26", revenueMonth: "Aug-26", drgRecd: "22-05-2026", drgRevised: "—",
-    poDate: "01-05-2026", poCleared: "08-05-2026", oaReleased: "22-05-2026", gaApproval: "—",
-    need: "20-08-2026", promise: "26-08-2026", revised: "26-08-2026",
-    planMonth: "Aug-26", planWeek: "Wk-1", weight: "3,400",
-    checkpoint: "Quality released", state: "warn", stateNote: "Billed, not moved",
-    owner: "Dispatch — K. Salvi", pct: 90,
-    current: "Invoiced but still in the yard",
-    currentSub: "8 units billed in late August. Crate clearance was never raised.",
-    next: "Raise crate clearance and book transport", nextOwner: "Dispatch", nextDue: "Overdue",
-    subitems: [],
-    supply: [],
-    gate: [
-      { t: "Quality released", s: "pass", n: "Released 24-08-2026" },
-      { t: "Customer inspection", s: "na", n: "Not required — inspection is Self" },
-      { t: "Crate ready", s: "fail", n: "Wooden crate not raised. The only thing holding 8 units." },
-      { t: "Documents complete", s: "pass", n: "Invoice raised August 2026" },
-      { t: "As-built BOM frozen", s: "pass", n: "Frozen 24-08-2026" },
-    ],
-    exceptions: [
-      { t: "Billed but not moved", sub: "8 units invoiced at ₹16,75,262, sitting undispatched. Crate is the only open item.", owner: "Dispatch", due: "Overdue", level: "warn" },
-      { t: "Slow to release", sub: "PO cleared 08-05, OA released 22-05. 14 days before work could start.", owner: "Projects", due: "Review", level: "warn" },
-    ],
-    catch: {
-      promised: "8 silencers to Systemair. Promised 26-08 and invoiced in late August.",
-      done: "Built, quality released 24-08, as-built BOM frozen, invoice raised.",
-      blocking: "Nobody raised the wooden crate. Eight finished units, ₹16.75 lakh, sitting in the yard.",
-      next: "Dispatch raises crate clearance and books transport. Half a day of work.",
-    },
-    timeline: [
-      { when: "24-08-26", time: "16:00", who: "Quality — S. Deshpande", act: "Released for dispatch", note: "All 8 units passed. As-built BOM frozen.", next: "Dispatch to pack", kind: "mark" },
-      { when: "22-05-26", time: "10:00", who: "Projects — R. Mehta", act: "OA released", note: "PO had been cleared on 08-05. 14 days between clearing and release.", next: "Planning to load", kind: "bad" },
-    ],
-  },
-  {
-    oa: "20736", epicor: "020736-1-1", sap: "SO-40245", custPo: "CTSPL/2026/118",
-    customer: "Crescent Techno Solutions Pvt Ltd", model: "RBI490-619", qty: 1, amount: "1,10,400",
-    insp: "Self", agent: "Banumathy K", cls: "Catalogue",
-    code: "C", drive: "Direct", legacy: "RE", lifecycle: "active", openedDays: 62,
-    payTerms: "100% advance with PO", payState: "received",
-    mfgMonth: "Sep-26", revenueMonth: "Sep-26", drgRecd: "30-07-2026", drgRevised: "—",
-    poDate: "08-07-2026", poCleared: "25-07-2026", oaReleased: "30-07-2026", gaApproval: "—",
-    need: "20-08-2026", promise: "28-08-2026", revised: "28-08-2026",
-    planMonth: "Sep-26", planWeek: "Wk-2", weight: "410",
-    checkpoint: "Quality released", state: "on-track", stateNote: "Ready to leave",
-    owner: "Dispatch — K. Salvi", pct: 95,
-    current: "Packed and ready",
-    currentSub: "Manufacturing drawing received 30-07. Packed and ready since 02-09.",
-    next: "Book transport", nextOwner: "Dispatch", nextDue: "Today",
-    subitems: [
-      { n: "Hub", s: "Ready", d: "10-08-2026" },
-      { n: "Shaft", s: "Ready", d: "12-08-2026" },
-      { n: "Impeller", s: "Ready", d: "18-08-2026" },
-      { n: "Casing", s: "Ready", d: "20-08-2026" },
-    ],
-    supply: [
-      { item: "Motor 3 kW", scope: "Not applicable (NA)", supplier: "—", expected: "—", received: "—", age: 0 },
-    ],
-    gate: [
-      { t: "Quality released", s: "pass", n: "Released 01-09-2026" },
-      { t: "Customer inspection", s: "na", n: "Not required — inspection is Self" },
-      { t: "Crate ready", s: "pass", n: "Packed 02-09-2026" },
-      { t: "Documents complete", s: "pass", n: "Complete" },
-      { t: "As-built BOM frozen", s: "pass", n: "Frozen 01-09-2026" },
+      { t: "Documents complete", s: "pass", n: "Drawing and route released" },
+      { t: "As-built BOM frozen", s: "na", n: "Freezes at assembly completion" },
     ],
     exceptions: [],
     catch: {
-      promised: "1 × RBI490-619 to Crescent Techno Solutions by 28-08.",
-      done: "Everything. Built, released, packed and ready since 02-09.",
-      blocking: "Nothing. All five dispatch conditions are met.",
-      next: "Dispatch books transport. This one can leave today.",
+      promised: "4 × RBI490-840 centrifugal fans to Taikisha Engineering. Line dates 16-09, 10-10, 20-10 and 30-10.",
+      done: "All four fans scheduled on finite capacity from the BOM and route; the schedule is firmed.",
+      blocking: "Nothing started yet. Line 1 (16-09) is tight — its scheduled end is 29-09-2026.",
+      next: "Production starts the manufacturing orders; closures post back to SAP Business One.",
     },
     timeline: [
-      { when: "02-09-26", time: "11:30", who: "Dispatch — K. Salvi", act: "Packed and ready", note: "Crate complete, documents attached.", next: "Book transport", kind: "mark" },
-      { when: "30-07-26", time: "09:00", who: "Design — V. Rane", act: "Manufacturing drawing received", note: "", next: "Planning to load", kind: "" },
-    ],
-  },
-  {
-    oa: "20790", epicor: "020790-1-1", sap: "SO-40260", custPo: "CE/2026/0114",
-    customer: "Core Energy Systems", model: "WP-1600 engineered fan", qty: 1, amount: "48,20,000",
-    insp: "Client", agent: "Rajesh C", cls: "Project",
-    code: "A", drive: "Belt", legacy: "FAB", lifecycle: "active", openedDays: 90,
-    payTerms: "40% advance, 50% against proforma, 10% before despatch", payState: "advance-only",
-    mfgMonth: "Nov-26", revenueMonth: "Nov-26", drgRecd: "12-06-2026", drgRevised: "—",
-    poDate: "02-06-2026", poCleared: "10-06-2026", oaReleased: "12-06-2026", gaApproval: "01-07-2026",
-    need: "20-11-2026", promise: "30-11-2026", revised: "30-11-2026",
-    planMonth: "Nov-26", planWeek: "Wk-3", weight: "6,900",
-    checkpoint: "Parts made", state: "watch", stateNote: "Hold point due",
-    owner: "Quality — S. Deshpande", pct: 45,
-    current: "Casing rolled, awaiting radiography",
-    currentSub: "Long-seam welding finished 05-09. Radiography is a contractual hold point.",
-    next: "Radiography with the customer's inspector", nextOwner: "Quality", nextDue: "12-09-2026",
-    subitems: [],
-    supply: [
-      { item: "Plate IS 2062 Gr.B", scope: "Nadi (NM)", supplier: "JSW Steel", expected: "15-07-2026", received: "14-07-2026", age: 0 },
-      { item: "Motor 160 kW", scope: "Nadi (NM)", supplier: "ABB", expected: "10-10-2026", received: null, age: 0 },
-    ],
-    operations: [
-      { n: "Material procurement", start: "15-07", end: "15-07", s: "Complete", hold: false },
-      { n: "Raw material stamping for test piece", start: "17-07", end: "17-07", s: "Passed", hold: true },
-      { n: "Chemical & mechanical testing", start: "17-07", end: "20-07", s: "Passed", hold: true },
-      { n: "Raw material stamping transfer", start: "22-07", end: "22-07", s: "Complete", hold: false },
-      { n: "Material cutting", start: "22-07", end: "23-07", s: "Complete", hold: false },
-      { n: "Flange machining", start: "23-07", end: "26-07", s: "Complete", hold: false },
-      { n: "Casing rolling & long-seam welding", start: "23-08", end: "05-09", s: "Complete", hold: false },
-      { n: "Radiography test", start: "12-09", end: "13-09", s: "Waiting", hold: true },
-      { n: "Flange dimension check", start: "14-09", end: "14-09", s: "Not started", hold: true },
-      { n: "Casing fitup & welding", start: "16-09", end: "20-09", s: "Not started", hold: false },
-      { n: "Dye penetrant test", start: "22-09", end: "23-09", s: "Not started", hold: true },
-    ],
-    gate: [
-      { t: "Quality released", s: "fail", n: "4 hold points still open" },
-      { t: "Customer inspection", s: "fail", n: "Required throughout — inspection is Client" },
-      { t: "Crate ready", s: "na", n: "Raise after quality release" },
-      { t: "Documents complete", s: "fail", n: "QAP records incomplete" },
-      { t: "As-built BOM frozen", s: "fail", n: "Freezes at assembly completion" },
-    ],
-    exceptions: [],
-    catch: {
-      promised: "1 × WP-1600 engineered fan to Core Energy by 30-11. Customer inspection throughout.",
-      done: "Material tested and cleared, flanges machined, casing rolled and long-seam welded by 05-09.",
-      blocking: "Nothing yet. The next operation is a radiography hold point needing the customer's inspector on site.",
-      next: "Quality schedules radiography for 12-09. Fit-up cannot start until it passes.",
-    },
-    timeline: [
-      { when: "05-09-26", time: "17:00", who: "Production — D. Shirke", act: "Long-seam welding complete", note: "Casing rolled and welded, ready for radiography.", next: "Quality to schedule the hold point", kind: "mark" },
-      { when: "20-07-26", time: "14:00", who: "Quality — S. Deshpande", act: "Chemical & mechanical test passed", note: "Hold point cleared with the customer's inspector present.", next: "Release material for cutting", kind: "mark" },
-      { when: "12-06-26", time: "10:00", who: "Projects — R. Mehta", act: "OA released", note: "Engineered order. Operation schedule built with QAP hold points.", next: "Design to release drawings", kind: "mark" },
-    ],
-  },
-  {
-    oa: "20262", epicor: "020262-5-1", sap: "SO-40118", custPo: "PME/2026-27",
-    customer: "Powermech Engineering", model: "Service charges of fan", qty: 1, amount: "20,000",
-    insp: "Self", agent: "Rajesh C", cls: "Catalogue",
-    code: "SERVICE", drive: "—", legacy: "RE", lifecycle: "active", openedDays: 106,
-    payTerms: "100% against invoice", payState: "advance-only",
-    mfgMonth: "Sep-26", revenueMonth: "Oct-26", drgRecd: "30-06-2026", drgRevised: "—",
-    need: "25-05-2026", promise: "05-06-2026", revised: "05-06-2026",
-    planMonth: "Oct-26", planWeek: "Back log", weight: "0",
-    checkpoint: "Quality released", state: "warn", stateNote: "Service, not built",
-    owner: "Projects — R. Mehta", pct: 80,
-    current: "Service order — no manufacturing",
-    currentSub: "Repair/service charge line. Rides the spine but skips the build checkpoints.",
-    next: "Raise invoice and close", nextOwner: "Projects", nextDue: "This week",
-    subitems: [], supply: [],
-    gate: [
-      { t: "Quality released", s: "na", n: "Service order — nothing to inspect" },
-      { t: "Customer inspection", s: "na", n: "Not required" },
-      { t: "Crate ready", s: "na", n: "Nothing to crate" },
-      { t: "Documents complete", s: "pass", n: "Service report ready" },
-      { t: "As-built BOM frozen", s: "na", n: "No BOM on a service line" },
-    ],
-    exceptions: [],
-    catch: {
-      promised: "Service charge line to Powermech Engineering, ₹20,000.",
-      done: "Service performed. Report attached.",
-      blocking: "Nothing. This is a commercial/service line, not a manufactured fan.",
-      next: "Projects raises the invoice and closes the line.",
-    },
-    timeline: [
-      { when: "05-06-26", time: "12:00", who: "Service — R. Mehta", act: "Service completed", note: "On-site service charge. No manufacturing.", next: "Raise invoice", kind: "mark" },
-    ],
-  },
-  {
-    oa: "19449", epicor: "019449-1-1", sap: "SO-39770", custPo: "MAK/2026/077",
-    customer: "M/s MAK Clean", model: "Oil level indicator (2 nos), bearing block", qty: 2, amount: "—",
-    insp: "Self", agent: "Raja A", cls: "Catalogue",
-    code: "SERVICE", drive: "—", legacy: "SHORT", lifecycle: "active", openedDays: 110,
-    payTerms: "100% advance with PO", payState: "received",
-    mfgMonth: "Sep-26", revenueMonth: "Aug-26", drgRecd: "—", drgRevised: "—",
-    need: "—", promise: "—", revised: "—",
-    planMonth: "Aug-26", planWeek: "Short supply", weight: "0",
-    checkpoint: "Material ready", state: "blocked", stateNote: "Short supply — bought-out",
-    owner: "Purchase — S. Kulkarni", pct: 30,
-    current: "Waiting on a bought-out spare",
-    currentSub: "Spare-part supply order (Dodge-make bearings). Nothing to manufacture — purely a bought-out item.",
-    next: "Receive the bought-out item, then pack", nextOwner: "Purchase", nextDue: "Overdue",
-    subitems: [],
-    supply: [
-      { item: "Oil level indicator (Dodge)", scope: "Nadi (NM)", supplier: "Dodge / local", expected: "26-08-2026", received: null, age: 13 },
-    ],
-    gate: [
-      { t: "Quality released", s: "na", n: "Bought-out spare, no build" },
-      { t: "Customer inspection", s: "na", n: "Not required" },
-      { t: "Crate ready", s: "fail", n: "Pack after receipt" },
-      { t: "Documents complete", s: "pass", n: "PO on file" },
-      { t: "As-built BOM frozen", s: "na", n: "No BOM on a spare line" },
-    ],
-    exceptions: [
-      { t: "Bought-out spare not received", sub: "Dodge-make items on order and overdue. Spare-part line, easy to lose on the sheet.", owner: "Purchase", due: "Overdue", level: "warn" },
-    ],
-    catch: {
-      promised: "2 × oil level indicator + bearing block to M/s MAK Clean.",
-      done: "PO placed on the supplier.",
-      blocking: "The bought-out spares have not arrived.",
-      next: "Purchase receives the items, then Dispatch packs and ships.",
-    },
-    timeline: [
-      { when: "26-08-26", time: "10:00", who: "Purchase — S. Kulkarni", act: "Bought-out became overdue", note: "Spare-part supply line. Ageing on the shortage list.", next: "Chase supplier", kind: "bad" },
-    ],
-  },
-  {
-    oa: "15288", epicor: "015288-1-1", sap: "SO-33110", custPo: "ALS/2026/E-BLOCK",
-    customer: "Ballestra Engineering & Projects", model: "NAF/1120-35012 (E-Block)", qty: 7, amount: "19,95,000",
-    insp: "Client", agent: "Satheesh Kumar R", cls: "Project",
-    code: "A", drive: "Belt", legacy: "MFG-BL", lifecycle: "dead", openedDays: 130,
-    payTerms: "20% adv, 70% against readiness, 10% within 30 days", payState: "advance-only",
-    mfgMonth: "Hold", revenueMonth: "Hold", drgRecd: "05-05-2026", drgRevised: "—",
-    need: "22-08-2026", promise: "20-08-2026", revised: "02-09-2026",
-    planMonth: "Hold", planWeek: "Dead", weight: "0",
-    checkpoint: "Parts made", state: "at-risk", stateNote: "Stalled — no movement",
-    owner: "Projects — R. Mehta", pct: 50,
-    current: "Stalled order — no movement in weeks",
-    currentSub: "6 of 7 motors received 15-06, then stalled. Sitting on HOLD in every plan column since — needs a decision.",
-    next: "Commercial decision — close, cancel or revive", nextOwner: "Management", nextDue: "Escalated",
-    subitems: [], supply: [],
-    gate: [
-      { t: "Quality released", s: "fail", n: "Never completed" },
-      { t: "Customer inspection", s: "fail", n: "Client inspection, never held" },
-      { t: "Crate ready", s: "na", n: "—" },
-      { t: "Documents complete", s: "fail", n: "Stale" },
-      { t: "As-built BOM frozen", s: "fail", n: "—" },
-    ],
-    exceptions: [
-      { t: "Stalled order — needs a decision", sub: "Promised 20-08, no movement since. Sitting on HOLD in every plan column — needs a call, not another status update.", owner: "Management", due: "Escalated", level: "risk" },
-    ],
-    catch: {
-      promised: "7 × NAF/1120 to Ballestra (E-Block). Promised 20-08-2026.",
-      done: "6 of 7 motors received 15-06. Then the order stalled.",
-      blocking: "No movement in weeks. The order still consumes a row and a status every review.",
-      next: "Management decides: close, cancel, or formally revive with a fresh date.",
-    },
-    timeline: [
-      { when: "15-06-26", time: "10:00", who: "Stores", act: "6 of 7 motors received", note: "Order stalled shortly after. No movement since.", next: "Awaiting a commercial decision", kind: "bad" },
-    ],
-  },
-  {
-    oa: "18902", epicor: "018902-1-1", sap: "SO-38540", custPo: "GEM/2026/C-441",
-    customer: "Gemini Cooling Systems", model: "Motor pulley (replace on site)", qty: 2, amount: "—",
-    insp: "Self", agent: "Raja A", cls: "Catalogue",
-    code: "SERVICE", drive: "—", legacy: "SHORT", lifecycle: "cancelled", openedDays: 120,
-    payTerms: "100% advance with PO", payState: "na",
-    mfgMonth: "—", revenueMonth: "—", drgRecd: "—", drgRevised: "—",
-    need: "—", promise: "—", revised: "—",
-    planMonth: "—", planWeek: "Cancelled", weight: "0",
-    checkpoint: "Order accepted", state: "warn", stateNote: "Cancelled by customer",
-    owner: "Projects — R. Mehta", pct: 0,
-    current: "Cancelled",
-    currentSub: "Customer cancelled the replacement-pulley order. Kept for audit, out of the live plan.",
-    next: "Confirm cancellation credit and close", nextOwner: "Projects", nextDue: "—",
-    subitems: [], supply: [],
-    gate: [
-      { t: "Quality released", s: "na", n: "Cancelled" },
-      { t: "Customer inspection", s: "na", n: "Cancelled" },
-      { t: "Crate ready", s: "na", n: "Cancelled" },
-      { t: "Documents complete", s: "na", n: "Cancelled" },
-      { t: "As-built BOM frozen", s: "na", n: "Cancelled" },
-    ],
-    exceptions: [],
-    catch: {
-      promised: "2 × motor pulley to Gemini Cooling.",
-      done: "Order accepted, then cancelled by the customer.",
-      blocking: "Nothing — cancelled. Retained for audit only.",
-      next: "Projects confirms any cancellation credit and closes the record.",
-    },
-    timeline: [
-      { when: "02-08-26", time: "15:00", who: "Projects — R. Mehta", act: "Order cancelled by customer", note: "Retained for audit. Removed from the live plan.", next: "Confirm credit and close", kind: "bad" },
+      { when: "08-09-26", time: "09:00", who: "Planning — A. Nair", act: "Schedule firmed for all four lines", note: "MOs scheduled on finite capacity from the BOM and route; schedule frozen.", next: "Production to START the first MOs", kind: "mark" },
     ],
   },
 ];
@@ -808,13 +435,16 @@ const ORDERS = [
 
 /* Work groups — read from SAP B1 (§7.1.2); no duplicate set-up here. */
 const WORKGROUPS = [
-  { id: "MS",    name: "Machine Shop" },
-  { id: "FAB",   name: "Fabrication & Casing Shop" },
-  { id: "ASM",   name: "Assembly" },
-  { id: "TEST",  name: "Testing & Balancing" },
-  { id: "PAINT", name: "Paint & Finish" },
-  { id: "PACK",  name: "Packing" },
-  { id: "SUB",   name: "Subcontract" },
+  { id: "CUT", name: "CNC Cutting Centre" },
+  { id: "SPIN", name: "Spinning Centre" },
+  { id: "MS", name: "Machine Shop" },
+  { id: "IMP", name: "Impeller Shop" },
+  { id: "FAB", name: "Fabrication Shop" },
+  { id: "ASM", name: "Assembly Shop" },
+  { id: "TEST", name: "Fan Testing Centre" },
+  { id: "PAINT", name: "Paint Booth" },
+  { id: "PACK", name: "Packing Centre" },
+  { id: "SC", name: "Fabrication Group — Subcontract" },
 ];
 
 /* Work centres under each group. Capacity = shiftHrs × shifts per
@@ -823,51 +453,86 @@ const WORKGROUPS = [
    already in the route hours (§9.1.2). Subcontract centres are dated
    by lead time, not by in-house hours (§9.1.7). */
 const WORKCENTRES = [
-  { id: "VTL-1",   name: "Vertical turret lathe",       group: "MS",   shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "HMC-1",   name: "Horizontal machining centre", group: "MS",   shiftHrs: 8, shifts: 2, downtime: 0 },
-  { id: "DRILL-1", name: "Radial drill",                group: "MS",   shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "ROLL-1",  name: "Plate rolling",               group: "FAB",  shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "WELD-1",  name: "Welding bay 1",               group: "FAB",  shiftHrs: 8, shifts: 2, downtime: 0 },
-  { id: "WELD-2",  name: "Welding bay 2",               group: "FAB",  shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "FITUP-1", name: "Casing fit-up",               group: "FAB",  shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "ASM-1",   name: "Assembly bay 1",              group: "ASM",  shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "ASM-2",   name: "Assembly bay 2",              group: "ASM",  shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "BAL-1",   name: "Dynamic balancing",           group: "TEST", shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "TEST-1",  name: "Test rig",                    group: "TEST", shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "PAINT-1", name: "Paint booth",                 group: "PAINT",shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "PACK-1",  name: "Packing & crating",           group: "PACK", shiftHrs: 8, shifts: 1, downtime: 0 },
-  { id: "SC-GALV", name: "Galvanising (subcontract)",   group: "SUB",  subcontract: true, leadDays: 7 },
-  { id: "SC-MACH", name: "Heavy machining (subcontract)",group: "SUB", subcontract: true, leadDays: 10 },
+  { id: "PLAS-1", name: "Plasma Cutting Machine 1", group: "CUT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "PLAS-2", name: "Plasma Cutting Machine 2", group: "CUT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "LASER-1", name: "Laser Cutting Machine 1", group: "CUT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "CSPIN-1", name: "CNC Spinning Machine 1", group: "SPIN", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "MSPIN-1", name: "Manual Spinning Machine 1", group: "SPIN", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "CLATHE-1", name: "CNC Lathe 1", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "CLATHE-2", name: "CNC Lathe 2", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "CLATHE-3", name: "CNC Lathe 3", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "LATHE-1", name: "Lathe 1", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "LATHE-2", name: "Lathe 2", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "LATHE-3", name: "Lathe 3", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "SLOT-1", name: "Slotting Machine 1", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "KEYW-1", name: "Key Way Machine 1", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "RDRILL-1", name: "Radial Drilling 1", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "RDRILL-2", name: "Radial Drilling 2", group: "MS", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "FIT-1", name: "Fitup Station 1 — SC1", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FIT-2", name: "Fitup Station 2 — SC2", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FIT-3", name: "Fitup Station 3 — SC3", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "WELD-1", name: "Welding Booth 1 — SS", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "WELD-2", name: "Welding Booth 2", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "WELD-3", name: "Welding Booth 3", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "WELD-4", name: "Welding Booth 4", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "WELD-5", name: "Welding Booth 5", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "TIG-1", name: "TiG Welding Booth 1", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "DBAL-1", name: "Dynamic Balancing 1", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "DBAL-2", name: "Dynamic Balancing 2", group: "IMP", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FLANG-1", name: "Flanging Machine 1", group: "FAB", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "ROLL-1", name: "Rolling Machine 1", group: "FAB", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "PRESS-1", name: "Press Break 1", group: "FAB", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FABG-1", name: "Fabrication Group 1 — COM", group: "FAB", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FABG-2", name: "Fabrication Group 2 — COM", group: "FAB", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FABG-3", name: "Fabrication Group 3 — SC1", group: "FAB", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FABG-4", name: "Fabrication Group 4 — SC2", group: "FAB", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FABG-5", name: "Fabrication Group 5 — SC3", group: "FAB", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "ASMG-1", name: "Assembly Operator Group 1", group: "ASM", qty: 10, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "ASMG-2", name: "Assembly Operator Group 2", group: "ASM", qty: 5, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "ASMH", name: "Assembly Helper", group: "ASM", qty: 4, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "TESTE", name: "Test Engineer", group: "TEST", qty: 3, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "TESTO", name: "Testing Operator", group: "TEST", qty: 2, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "TESTH", name: "Testing Helper", group: "TEST", qty: 2, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "BLAST-1", name: "Blasting Booth 1", group: "PAINT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "BLAST-2", name: "Blasting Booth 2", group: "PAINT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "BLAST-3", name: "Blasting Booth 3 — SS", group: "PAINT", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "PAINT-1", name: "Painting Booth 1 — B", group: "PAINT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "PAINT-2", name: "Painting Booth 2 — S", group: "PAINT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "PAINT-3", name: "Painting Booth 3 — S", group: "PAINT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "PAINT-4", name: "Painting Booth 4 — OVN", group: "PAINT", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "PAINT-5", name: "Painting Booth 5 — RW", group: "PAINT", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "PACKG-1", name: "Packing Group 1 — SC1", group: "PACK", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "PACKG-2", name: "Packing Group 2 — SC2", group: "PACK", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "PACKG-3", name: "Packing Group 3 — SC3", group: "PACK", qty: 1, shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "SCG-1", name: "Sub Contract Group 1", group: "SC", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0, subcontract: true, leadDays: 12 },
+  { id: "SCG-2", name: "Sub Contract Group 2", group: "SC", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0, subcontract: true, leadDays: 12 },
+  { id: "SCG-3", name: "Sub Contract Group 3", group: "SC", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0, subcontract: true, leadDays: 12 },
+  { id: "SCG-4", name: "Sub Contract Group 4", group: "SC", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0, subcontract: true, leadDays: 12 },
+  { id: "SCG-5", name: "Sub Contract Group 5", group: "SC", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0, subcontract: true, leadDays: 12 },
+  { id: "SCG-6", name: "Sub Contract Group 6", group: "SC", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0, subcontract: true, leadDays: 12 },
+  { id: "SCG-7", name: "Sub Contract Group 7", group: "SC", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0, subcontract: true, leadDays: 12 },
+  { id: "SCG-8", name: "Sub Contract Group 8", group: "SC", qty: 1, shiftHrs: 8, shifts: 1, downtime: 0, subcontract: true, leadDays: 12 },
 ];
 
 /* Overtime / extra-shift changes are made in the platform and sent
    back to SAP B1 (§9.1.9). Each entry adds hours to a work centre's
    available capacity for the dates concerned. Platform-held (§7.2). */
-const CAL_ADJUST = [
-  { wc: "WELD-1", from: "08-09-2026", to: "13-09-2026", kind: "Extra shift", addHrsPerDay: 8, by: "Planning — A. Nair", note: "Carrying the WP-1600 casing-welding load" },
-];
+const CAL_ADJUST = [];
 
 /* Bought-out material, keyed by OA. Scheduling dates the start of an
    order that waits on an item: the lead time set against the item
    code is used first; where none is set, the due date of the open
    purchase order is used (§9.1.5). Read from SAP B1 (§7.1.4, §7.1.8). */
 const BOUGHTOUT = {
-  "19962": [
-    { item: "Motor 15 kW", scope: "Nadi (NM)", supplier: "Crompton Greaves", leadDays: null, poDue: "25-08-2026", received: null },
-    { item: "Bearing set",  scope: "Nadi (NM)", supplier: "SKF India",       leadDays: 21,   poDue: "20-07-2026", received: "19-07-2026" },
-  ],
-  "20422": [
-    { item: "Motor 7.5 kW", scope: "Customer (CM)", supplier: "Customer scope", leadDays: null, poDue: "26-08-2026", received: null },
-  ],
-  "20790": [
-    { item: "Plate IS 2062 Gr.B", scope: "Nadi (NM)", supplier: "JSW Steel", leadDays: 21, poDue: "15-07-2026", received: "14-07-2026" },
-    { item: "Motor 160 kW",       scope: "Nadi (NM)", supplier: "ABB",       leadDays: 90, poDue: "10-10-2026", received: null },
-  ],
-  "19449": [
-    { item: "Oil level indicator (Dodge)", scope: "Nadi (NM)", supplier: "Dodge / local", leadDays: null, poDue: "26-08-2026", received: null },
-  ],
-  "15288": [
-    { item: "Motors (7 off)", scope: "Nadi (NM)", supplier: "—", leadDays: 60, poDue: "15-06-2026", received: "15-06-2026 (6 of 7)" },
+  /* Assumed lead times & PO-due dates (flagged) — the Excel lists the
+     bought-out items and raw material but no procurement dates (§9.1.5). */
+  "18381": [
+    { item: "Taper Lock Pulley 150×2A×28 (TLP-150)", scope: "Nadi (NM)", supplier: "Fenner India", leadDays: 21, poDue: "20-09-2026", received: null },
+    { item: "Taper Lock Pulley 250×2A×90 (TLP-250)", scope: "Nadi (NM)", supplier: "Fenner India", leadDays: 21, poDue: "20-09-2026", received: null },
+    { item: "V-Belt SPA-2500 (×2)", scope: "Nadi (NM)", supplier: "Fenner India", leadDays: 14, poDue: "15-09-2026", received: null },
+    { item: "Sheet IS2062-E250BR (2/3/4/5 MM)", scope: "Nadi (NM)", supplier: "JSW Steel", leadDays: 10, poDue: "05-09-2026", received: "04-09-2026" },
+    { item: "Rod EN8 Ø100 / IS2062 Ø180", scope: "Nadi (NM)", supplier: "Mukand Ltd", leadDays: 15, poDue: "06-09-2026", received: "05-09-2026" },
+    { item: "Plate IS2062 20 MM / C-Channel 100×50", scope: "Nadi (NM)", supplier: "JSW Steel", leadDays: 12, poDue: "05-09-2026", received: "03-09-2026" },
   ],
 };
 
@@ -897,128 +562,336 @@ const CLOSURE_STATE = {
    | not-started. Service / spare / cancelled lines carry no MO — they
    are not manufactured (absent key). */
 const MOS = {
-  "19962": [
-    { mo: "MO-19962-1", soLine: "019962-1-1", item: "NAF/1050/255/6", kind: "fg", qty: 1, needDate: "30-07-2026",
-      direction: "backward", schedStart: "02-07-2026", schedEnd: "28-07-2026", frozen: true,
-      status: "started", startAt: "02-07-26 08:10", stopAt: null, waitingFor: "material:Motor 15 kW", closurePosted: false,
+  "18381": [
+    { mo: "MO-18381-1-FAN", soLine: "018381-1-1", item: "Centrifugal Fan (FAN-RBI490840)", kind: "fg", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "22-09-2026", schedEnd: "29-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
       route: [
-        { op: "Impeller fab & balancing", wc: "BAL-1",   hrs: 12, s: "done" },
-        { op: "Casing fit-up & welding",  wc: "FITUP-1", hrs: 14, s: "done" },
-        { op: "Final assembly",           wc: "ASM-1",   hrs: 10, s: "waiting", note: "Motor not received" },
-        { op: "Testing",                  wc: "TEST-1",  hrs: 4,  s: "queued" },
-      ], stoppages: [], rejections: [] },
-    { mo: "MO-19962-2", soLine: "019962-2-1", item: "NAF-900-350-09", kind: "fg", qty: 1, needDate: "30-07-2026",
-      direction: "backward", schedStart: "04-07-2026", schedEnd: "28-07-2026", frozen: true,
-      status: "started", startAt: "04-07-26 08:20", stopAt: null, waitingFor: "material:Motor 15 kW", closurePosted: false,
+          { op: "Opr 22 · Grit Blasting", wc: "BLAST-1", hrs: 3, s: "queued" },
+          { op: "Opr 23 · Pre Painting", wc: "PAINT-1", hrs: 2, s: "queued", queue: 1 },
+          { op: "Opr 24 · Case & Impeller Assembly", wc: "ASMG-1", hrs: 2, s: "queued" },
+          { op: "Opr 25 · Bearing Assembly", wc: "ASMG-1", hrs: 1, s: "queued" },
+          { op: "Opr 26 · Drive Pack Assembly", wc: "ASMG-1", hrs: 2, s: "queued" },
+          { op: "Opr 27 · Inlet / Belt Guard Fixing", wc: "ASMG-1", hrs: 3, s: "queued", queue: 0.5 },
+          { op: "Opr 28 · Performance Testing — IS", wc: "TESTE", hrs: 3, s: "queued" },
+          { op: "Opr 29 · Final Painting", wc: "PAINT-1", hrs: 4, s: "queued", queue: 1 },
+          { op: "Opr 30 · Inlet / Belt Guard Fixing", wc: "ASMH", hrs: 2, s: "queued" },
+          { op: "Opr 31 · QC Stage Inspection", wc: "TESTE", hrs: 1, s: "queued" },
+          { op: "Opr 32 · Packing", wc: "PACKG-1", hrs: 1, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-1-IMP", soLine: "018381-1-1", item: "Impeller (IMP-RBI490840)", kind: "make", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "17-09-2026", schedEnd: "21-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
       route: [
-        { op: "Impeller fab & balancing", wc: "BAL-1",   hrs: 10, s: "done" },
-        { op: "Casing fit-up & welding",  wc: "FITUP-1", hrs: 12, s: "done" },
-        { op: "Final assembly",           wc: "ASM-2",   hrs: 9,  s: "waiting", note: "Motor not received" },
-        { op: "Testing",                  wc: "TEST-1",  hrs: 4,  s: "queued" },
-      ], stoppages: [], rejections: [] },
-    { mo: "MO-19962-3", soLine: "019962-3-1", item: "NAF/630/150/5/21", kind: "fg", qty: 1, needDate: "30-07-2026",
-      direction: "backward", schedStart: "06-07-2026", schedEnd: "28-07-2026", frozen: true,
-      status: "started", startAt: "06-07-26 08:00", stopAt: null, waitingFor: "material:Motor 15 kW", closurePosted: false,
+          { op: "Opr 15 · Fitup", wc: "FIT-1", hrs: 2, s: "queued" },
+          { op: "Opr 16 · Welding", wc: "WELD-2", hrs: 3, s: "queued" },
+          { op: "Opr 17 · Hub Fixing", wc: "FIT-1", hrs: 1, s: "queued" },
+          { op: "Opr 18 · Inlet Ring Fixing & Trimming", wc: "WELD-2", hrs: 2, s: "queued" },
+          { op: "Opr 19 · Face Out Correction", wc: "FIT-1", hrs: 2, s: "queued" },
+          { op: "Opr 20 · Dynamic Balancing", wc: "DBAL-1", hrs: 3, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-1-CAS", soLine: "018381-1-1", item: "Casing (CAS-RBI490840)", kind: "make", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "10-09-2026", schedEnd: "21-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
       route: [
-        { op: "Hub machining",           wc: "VTL-1",   hrs: 6,  s: "done" },
-        { op: "Impeller balancing",      wc: "BAL-1",   hrs: 8,  s: "done" },
-        { op: "Casing fit-up & welding", wc: "FITUP-1", hrs: 12, s: "done" },
-        { op: "Final assembly",          wc: "ASM-2",   hrs: 8,  s: "waiting", note: "Waiting 15 kW motor" },
-        { op: "Testing",                 wc: "TEST-1",  hrs: 4,  s: "queued" },
-        { op: "Paint & pack",            wc: "PACK-1",  hrs: 4,  s: "queued" },
-      ], stoppages: [], rejections: [] },
-    { mo: "MO-19962-6", soLine: "019962-6-1", item: "NAF/560/150/5", kind: "fg", qty: 1, needDate: "30-07-2026",
-      direction: "backward", schedStart: "10-07-2026", schedEnd: "30-07-2026", frozen: true,
-      status: "started", startAt: "10-07-26 09:00", stopAt: null, waitingFor: null, closurePosted: false,
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 10, s: "queued" },
+          { op: "Opr 21 · Casing Fabrication — SC", wc: "FABG-3", hrs: 32, s: "queued", queue: 10, subcontract: true, leadDays: 10 },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-1-SHA", soLine: "018381-1-1", item: "Shaft (SHA-RBI490840)", kind: "make", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "18-09-2026", schedEnd: "21-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
       route: [
-        { op: "Parts machining", wc: "HMC-1",   hrs: 6, s: "done" },
-        { op: "Casing fit-up",   wc: "FITUP-1", hrs: 8, s: "wip" },
-        { op: "Final assembly",  wc: "ASM-1",   hrs: 6, s: "queued" },
-      ], stoppages: [], rejections: [] },
-    { mo: "MO-19962-20", soLine: "019962-20-1", item: "NAF/315/150/5/10", kind: "fg", qty: 1, needDate: "30-07-2026",
-      direction: "backward", schedStart: "12-07-2026", schedEnd: "30-07-2026", frozen: true,
-      status: "started", startAt: "12-07-26 09:00", stopAt: null, waitingFor: null, closurePosted: false,
+          { op: "Opr 6 · Rod Cutting", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 12 · Shaft Machining — Pre", wc: "LATHE-2", hrs: 2, s: "queued" },
+          { op: "Opr 13 · Shaft Machining — Final", wc: "LATHE-2", hrs: 3, s: "queued" },
+          { op: "Opr 14 · Key Way Milling", wc: "SLOT-1", hrs: 1, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-1-HB", soLine: "018381-1-1", item: "Hub (HB-RBI490840)", kind: "make", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "08-09-2026", schedEnd: "17-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
       route: [
-        { op: "Parts machining", wc: "HMC-1",   hrs: 5, s: "done" },
-        { op: "Casing fit-up",   wc: "FITUP-1", hrs: 6, s: "wip" },
-        { op: "Final assembly",  wc: "ASM-2",   hrs: 5, s: "queued" },
-      ], stoppages: [], rejections: [] },
+          { op: "Opr 6 · Rod Cutting", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 7 · Hub Welding", wc: "FABG-1", hrs: 2.5, s: "queued", queue: 8 },
+          { op: "Opr 8 · Hub Machining — Pre", wc: "CLATHE-1", hrs: 3.5, s: "queued" },
+          { op: "Opr 9 · Hub Machining — Final", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 10 · Drilling", wc: "RDRILL-1", hrs: 2, s: "queued" },
+          { op: "Opr 11 · Key Way Broaching", wc: "SLOT-1", hrs: 0.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-1-BLD", soLine: "018381-1-1", item: "Blade ×8 (BLD-RBI490840)", kind: "make", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "15-09-2026", schedEnd: "17-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-1-BKP", soLine: "018381-1-1", item: "Backplate (BKP-RBI490840)", kind: "make", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "15-09-2026", schedEnd: "17-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-1-IC", soLine: "018381-1-1", item: "Inlet Cone (IC-RBI490840)", kind: "make", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "17-09-2026", schedEnd: "19-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+          { op: "Opr 2 · Cone Spinning", wc: "CSPIN-1", hrs: 2, s: "queued" },
+          { op: "Opr 3 · Grinding", wc: "FABG-1", hrs: 0.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-1-SH", soLine: "018381-1-1", item: "Shroud ×2 (SH-RBI490840)", kind: "make", qty: 1, needDate: "16-09-2026",
+      direction: "backward", schedStart: "14-09-2026", schedEnd: "17-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+          { op: "Opr 4 · Shroud Spinning", wc: "CSPIN-1", hrs: 1, s: "queued" },
+          { op: "Opr 5 · Grinding", wc: "FABG-1", hrs: 0.25, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-FAN", soLine: "018381-2-1", item: "Centrifugal Fan (FAN-RBI490840)", kind: "fg", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "03-10-2026", schedEnd: "10-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 22 · Grit Blasting", wc: "BLAST-1", hrs: 3, s: "queued" },
+          { op: "Opr 23 · Pre Painting", wc: "PAINT-1", hrs: 2, s: "queued", queue: 1 },
+          { op: "Opr 24 · Case & Impeller Assembly", wc: "ASMG-1", hrs: 2, s: "queued" },
+          { op: "Opr 25 · Bearing Assembly", wc: "ASMG-1", hrs: 1, s: "queued" },
+          { op: "Opr 26 · Drive Pack Assembly", wc: "ASMG-1", hrs: 2, s: "queued" },
+          { op: "Opr 27 · Inlet / Belt Guard Fixing", wc: "ASMG-1", hrs: 3, s: "queued", queue: 0.5 },
+          { op: "Opr 28 · Performance Testing — IS", wc: "TESTE", hrs: 3, s: "queued" },
+          { op: "Opr 29 · Final Painting", wc: "PAINT-1", hrs: 4, s: "queued", queue: 1 },
+          { op: "Opr 30 · Inlet / Belt Guard Fixing", wc: "ASMH", hrs: 2, s: "queued" },
+          { op: "Opr 31 · QC Stage Inspection", wc: "TESTE", hrs: 1, s: "queued" },
+          { op: "Opr 32 · Packing", wc: "PACKG-1", hrs: 1, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-IMP", soLine: "018381-2-1", item: "Impeller (IMP-RBI490840)", kind: "make", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "29-09-2026", schedEnd: "02-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 15 · Fitup", wc: "FIT-1", hrs: 2, s: "queued" },
+          { op: "Opr 16 · Welding", wc: "WELD-2", hrs: 3, s: "queued" },
+          { op: "Opr 17 · Hub Fixing", wc: "FIT-1", hrs: 1, s: "queued" },
+          { op: "Opr 18 · Inlet Ring Fixing & Trimming", wc: "WELD-2", hrs: 2, s: "queued" },
+          { op: "Opr 19 · Face Out Correction", wc: "FIT-1", hrs: 2, s: "queued" },
+          { op: "Opr 20 · Dynamic Balancing", wc: "DBAL-1", hrs: 3, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-CAS", soLine: "018381-2-1", item: "Casing (CAS-RBI490840)", kind: "make", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "22-09-2026", schedEnd: "02-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 10, s: "queued" },
+          { op: "Opr 21 · Casing Fabrication — SC", wc: "FABG-3", hrs: 32, s: "queued", queue: 10, subcontract: true, leadDays: 10 },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-SHA", soLine: "018381-2-1", item: "Shaft (SHA-RBI490840)", kind: "make", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "30-09-2026", schedEnd: "02-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 6 · Rod Cutting", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 12 · Shaft Machining — Pre", wc: "LATHE-2", hrs: 2, s: "queued" },
+          { op: "Opr 13 · Shaft Machining — Final", wc: "LATHE-2", hrs: 3, s: "queued" },
+          { op: "Opr 14 · Key Way Milling", wc: "SLOT-1", hrs: 1, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-HB", soLine: "018381-2-1", item: "Hub (HB-RBI490840)", kind: "make", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "19-09-2026", schedEnd: "29-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 6 · Rod Cutting", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 7 · Hub Welding", wc: "FABG-1", hrs: 2.5, s: "queued", queue: 8 },
+          { op: "Opr 8 · Hub Machining — Pre", wc: "CLATHE-1", hrs: 3.5, s: "queued" },
+          { op: "Opr 9 · Hub Machining — Final", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 10 · Drilling", wc: "RDRILL-1", hrs: 2, s: "queued" },
+          { op: "Opr 11 · Key Way Broaching", wc: "SLOT-1", hrs: 0.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-BLD", soLine: "018381-2-1", item: "Blade ×8 (BLD-RBI490840)", kind: "make", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "26-09-2026", schedEnd: "29-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-BKP", soLine: "018381-2-1", item: "Backplate (BKP-RBI490840)", kind: "make", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "26-09-2026", schedEnd: "29-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-IC", soLine: "018381-2-1", item: "Inlet Cone (IC-RBI490840)", kind: "make", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "29-09-2026", schedEnd: "01-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+          { op: "Opr 2 · Cone Spinning", wc: "CSPIN-1", hrs: 2, s: "queued" },
+          { op: "Opr 3 · Grinding", wc: "FABG-1", hrs: 0.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-2-SH", soLine: "018381-2-1", item: "Shroud ×2 (SH-RBI490840)", kind: "make", qty: 1, needDate: "10-10-2026",
+      direction: "backward", schedStart: "25-09-2026", schedEnd: "29-09-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+          { op: "Opr 4 · Shroud Spinning", wc: "CSPIN-1", hrs: 1, s: "queued" },
+          { op: "Opr 5 · Grinding", wc: "FABG-1", hrs: 0.25, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-FAN", soLine: "018381-4-1", item: "Centrifugal Fan (FAN-RBI490840)", kind: "fg", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "13-10-2026", schedEnd: "20-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 22 · Grit Blasting", wc: "BLAST-1", hrs: 3, s: "queued" },
+          { op: "Opr 23 · Pre Painting", wc: "PAINT-1", hrs: 2, s: "queued", queue: 1 },
+          { op: "Opr 24 · Case & Impeller Assembly", wc: "ASMG-1", hrs: 2, s: "queued" },
+          { op: "Opr 25 · Bearing Assembly", wc: "ASMG-1", hrs: 1, s: "queued" },
+          { op: "Opr 26 · Drive Pack Assembly", wc: "ASMG-1", hrs: 2, s: "queued" },
+          { op: "Opr 27 · Inlet / Belt Guard Fixing", wc: "ASMG-1", hrs: 3, s: "queued", queue: 0.5 },
+          { op: "Opr 28 · Performance Testing — IS", wc: "TESTE", hrs: 3, s: "queued" },
+          { op: "Opr 29 · Final Painting", wc: "PAINT-1", hrs: 4, s: "queued", queue: 1 },
+          { op: "Opr 30 · Inlet / Belt Guard Fixing", wc: "ASMH", hrs: 2, s: "queued" },
+          { op: "Opr 31 · QC Stage Inspection", wc: "TESTE", hrs: 1, s: "queued" },
+          { op: "Opr 32 · Packing", wc: "PACKG-1", hrs: 1, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-IMP", soLine: "018381-4-1", item: "Impeller (IMP-RBI490840)", kind: "make", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "08-10-2026", schedEnd: "12-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 15 · Fitup", wc: "FIT-1", hrs: 2, s: "queued" },
+          { op: "Opr 16 · Welding", wc: "WELD-2", hrs: 3, s: "queued" },
+          { op: "Opr 17 · Hub Fixing", wc: "FIT-1", hrs: 1, s: "queued" },
+          { op: "Opr 18 · Inlet Ring Fixing & Trimming", wc: "WELD-2", hrs: 2, s: "queued" },
+          { op: "Opr 19 · Face Out Correction", wc: "FIT-1", hrs: 2, s: "queued" },
+          { op: "Opr 20 · Dynamic Balancing", wc: "DBAL-1", hrs: 3, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-CAS", soLine: "018381-4-1", item: "Casing (CAS-RBI490840)", kind: "make", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "01-10-2026", schedEnd: "12-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 10, s: "queued" },
+          { op: "Opr 21 · Casing Fabrication — SC", wc: "FABG-3", hrs: 32, s: "queued", queue: 10, subcontract: true, leadDays: 10 },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-SHA", soLine: "018381-4-1", item: "Shaft (SHA-RBI490840)", kind: "make", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "09-10-2026", schedEnd: "12-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 6 · Rod Cutting", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 12 · Shaft Machining — Pre", wc: "LATHE-2", hrs: 2, s: "queued" },
+          { op: "Opr 13 · Shaft Machining — Final", wc: "LATHE-2", hrs: 3, s: "queued" },
+          { op: "Opr 14 · Key Way Milling", wc: "SLOT-1", hrs: 1, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-HB", soLine: "018381-4-1", item: "Hub (HB-RBI490840)", kind: "make", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "29-09-2026", schedEnd: "08-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 6 · Rod Cutting", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 7 · Hub Welding", wc: "FABG-1", hrs: 2.5, s: "queued", queue: 8 },
+          { op: "Opr 8 · Hub Machining — Pre", wc: "CLATHE-1", hrs: 3.5, s: "queued" },
+          { op: "Opr 9 · Hub Machining — Final", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 10 · Drilling", wc: "RDRILL-1", hrs: 2, s: "queued" },
+          { op: "Opr 11 · Key Way Broaching", wc: "SLOT-1", hrs: 0.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-BLD", soLine: "018381-4-1", item: "Blade ×8 (BLD-RBI490840)", kind: "make", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "06-10-2026", schedEnd: "08-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-BKP", soLine: "018381-4-1", item: "Backplate (BKP-RBI490840)", kind: "make", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "06-10-2026", schedEnd: "08-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-IC", soLine: "018381-4-1", item: "Inlet Cone (IC-RBI490840)", kind: "make", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "08-10-2026", schedEnd: "10-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+          { op: "Opr 2 · Cone Spinning", wc: "CSPIN-1", hrs: 2, s: "queued" },
+          { op: "Opr 3 · Grinding", wc: "FABG-1", hrs: 0.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-3-SH", soLine: "018381-4-1", item: "Shroud ×2 (SH-RBI490840)", kind: "make", qty: 1, needDate: "20-10-2026",
+      direction: "backward", schedStart: "05-10-2026", schedEnd: "08-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+          { op: "Opr 4 · Shroud Spinning", wc: "CSPIN-1", hrs: 1, s: "queued" },
+          { op: "Opr 5 · Grinding", wc: "FABG-1", hrs: 0.25, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-FAN", soLine: "018381-11-1", item: "Centrifugal Fan (FAN-RBI490840)", kind: "fg", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "23-10-2026", schedEnd: "30-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 22 · Grit Blasting", wc: "BLAST-1", hrs: 3, s: "queued" },
+          { op: "Opr 23 · Pre Painting", wc: "PAINT-1", hrs: 2, s: "queued", queue: 1 },
+          { op: "Opr 24 · Case & Impeller Assembly", wc: "ASMG-1", hrs: 2, s: "queued" },
+          { op: "Opr 25 · Bearing Assembly", wc: "ASMG-1", hrs: 1, s: "queued" },
+          { op: "Opr 26 · Drive Pack Assembly", wc: "ASMG-1", hrs: 2, s: "queued" },
+          { op: "Opr 27 · Inlet / Belt Guard Fixing", wc: "ASMG-1", hrs: 3, s: "queued", queue: 0.5 },
+          { op: "Opr 28 · Performance Testing — IS", wc: "TESTE", hrs: 3, s: "queued" },
+          { op: "Opr 29 · Final Painting", wc: "PAINT-1", hrs: 4, s: "queued", queue: 1 },
+          { op: "Opr 30 · Inlet / Belt Guard Fixing", wc: "ASMH", hrs: 2, s: "queued" },
+          { op: "Opr 31 · QC Stage Inspection", wc: "TESTE", hrs: 1, s: "queued" },
+          { op: "Opr 32 · Packing", wc: "PACKG-1", hrs: 1, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-IMP", soLine: "018381-11-1", item: "Impeller (IMP-RBI490840)", kind: "make", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "19-10-2026", schedEnd: "22-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 15 · Fitup", wc: "FIT-1", hrs: 2, s: "queued" },
+          { op: "Opr 16 · Welding", wc: "WELD-2", hrs: 3, s: "queued" },
+          { op: "Opr 17 · Hub Fixing", wc: "FIT-1", hrs: 1, s: "queued" },
+          { op: "Opr 18 · Inlet Ring Fixing & Trimming", wc: "WELD-2", hrs: 2, s: "queued" },
+          { op: "Opr 19 · Face Out Correction", wc: "FIT-1", hrs: 2, s: "queued" },
+          { op: "Opr 20 · Dynamic Balancing", wc: "DBAL-1", hrs: 3, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-CAS", soLine: "018381-11-1", item: "Casing (CAS-RBI490840)", kind: "make", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "12-10-2026", schedEnd: "22-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 10, s: "queued" },
+          { op: "Opr 21 · Casing Fabrication — SC", wc: "FABG-3", hrs: 32, s: "queued", queue: 10, subcontract: true, leadDays: 10 },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-SHA", soLine: "018381-11-1", item: "Shaft (SHA-RBI490840)", kind: "make", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "20-10-2026", schedEnd: "22-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 6 · Rod Cutting", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 12 · Shaft Machining — Pre", wc: "LATHE-2", hrs: 2, s: "queued" },
+          { op: "Opr 13 · Shaft Machining — Final", wc: "LATHE-2", hrs: 3, s: "queued" },
+          { op: "Opr 14 · Key Way Milling", wc: "SLOT-1", hrs: 1, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-HB", soLine: "018381-11-1", item: "Hub (HB-RBI490840)", kind: "make", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "09-10-2026", schedEnd: "19-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 6 · Rod Cutting", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 7 · Hub Welding", wc: "FABG-1", hrs: 2.5, s: "queued", queue: 8 },
+          { op: "Opr 8 · Hub Machining — Pre", wc: "CLATHE-1", hrs: 3.5, s: "queued" },
+          { op: "Opr 9 · Hub Machining — Final", wc: "CLATHE-1", hrs: 4, s: "queued" },
+          { op: "Opr 10 · Drilling", wc: "RDRILL-1", hrs: 2, s: "queued" },
+          { op: "Opr 11 · Key Way Broaching", wc: "SLOT-1", hrs: 0.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-BLD", soLine: "018381-11-1", item: "Blade ×8 (BLD-RBI490840)", kind: "make", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "16-10-2026", schedEnd: "19-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-BKP", soLine: "018381-11-1", item: "Backplate (BKP-RBI490840)", kind: "make", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "16-10-2026", schedEnd: "19-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-IC", soLine: "018381-11-1", item: "Inlet Cone (IC-RBI490840)", kind: "make", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "19-10-2026", schedEnd: "21-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+          { op: "Opr 2 · Cone Spinning", wc: "CSPIN-1", hrs: 2, s: "queued" },
+          { op: "Opr 3 · Grinding", wc: "FABG-1", hrs: 0.5, s: "queued" },
+        ], stoppages: [], rejections: [] },
+    { mo: "MO-18381-4-SH", soLine: "018381-11-1", item: "Shroud ×2 (SH-RBI490840)", kind: "make", qty: 1, needDate: "30-10-2026",
+      direction: "backward", schedStart: "15-10-2026", schedEnd: "19-10-2026", frozen: true,
+      status: "scheduled", startAt: null, stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+          { op: "Opr 1 · CNC Cutting", wc: "LASER-1", hrs: 1.5, s: "queued" },
+          { op: "Opr 4 · Shroud Spinning", wc: "CSPIN-1", hrs: 1, s: "queued" },
+          { op: "Opr 5 · Grinding", wc: "FABG-1", hrs: 0.25, s: "queued" },
+        ], stoppages: [], rejections: [] },
   ],
-  "18616": [
-    { mo: "MO-18616-1", soLine: "018616-1-1", item: "HP-900-WP", kind: "fg", qty: 1, needDate: "24-08-2026",
-      direction: "backward", schedStart: "05-08-2026", schedEnd: "22-08-2026", frozen: true,
-      status: "started", startAt: "05-08-26 08:00", stopAt: null, waitingFor: null, closurePosted: false,
-      route: [
-        { op: "Impeller machining & balancing", wc: "BAL-1",   hrs: 10, s: "done" },
-        { op: "Casing fit-up & welding",        wc: "FITUP-1", hrs: 12, s: "done" },
-        { op: "Final assembly",                 wc: "ASM-1",   hrs: 8,  s: "done" },
-        { op: "Leak & performance test",        wc: "TEST-1",  hrs: 6,  s: "wip", note: "Third leak — rework" },
-      ],
-      stoppages: [ { reason: "Repeat seal leak — line held", mins: 480, when: "28-08-26 16:40" } ],
-      rejections: [ { qty: 1, reason: "Mechanical seal — repeat leak, scrapped", when: "28-08-26" } ] },
-  ],
-  "20422": [
-    { mo: "MO-20422-2", soLine: "020422-2-1", item: "LVSC-900", kind: "fg", qty: 1, needDate: "20-08-2026",
-      direction: "backward", schedStart: "05-08-2026", schedEnd: "24-08-2026", frozen: true,
-      status: "started", startAt: "05-08-26 08:30", stopAt: null, waitingFor: "material:Motor 7.5 kW (customer)", closurePosted: false,
-      route: [
-        { op: "Impeller balancing",   wc: "BAL-1",   hrs: 6, s: "done" },
-        { op: "Casing fit-up & paint",wc: "PAINT-1", hrs: 8, s: "done" },
-        { op: "Final assembly",       wc: "ASM-1",   hrs: 6, s: "waiting", note: "Customer motor not received" },
-        { op: "Testing",              wc: "TEST-1",  hrs: 3, s: "queued" },
-      ], stoppages: [], rejections: [] },
-  ],
-  "19415": [
-    { mo: "MO-19415-1", soLine: "019415-2-1", item: "Silencer (×8)", kind: "fg", qty: 8, needDate: "20-08-2026",
-      direction: "backward", schedStart: "20-07-2026", schedEnd: "25-08-2026", frozen: true,
-      status: "stopped", startAt: "20-07-26 08:00", stopAt: "24-08-26 16:00", waitingFor: null, closurePosted: true,
-      route: [
-        { op: "Plate cutting",    wc: "ROLL-1", hrs: 16, s: "done" },
-        { op: "Fabrication",      wc: "WELD-2", hrs: 40, s: "done" },
-        { op: "Paint",            wc: "PAINT-1",hrs: 12, s: "done" },
-        { op: "Packing & crating",wc: "PACK-1", hrs: 8,  s: "done" },
-      ], stoppages: [], rejections: [] },
-  ],
-  "20736": [
-    { mo: "MO-20736-1", soLine: "020736-1-1", item: "RBI490-619", kind: "fg", qty: 1, needDate: "20-08-2026",
-      direction: "backward", schedStart: "04-08-2026", schedEnd: "20-08-2026", frozen: true,
-      status: "stopped", startAt: "04-08-26 08:00", stopAt: "02-09-26 11:30", waitingFor: null, closurePosted: "pending",
-      route: [
-        { op: "Parts machining", wc: "HMC-1",  hrs: 5, s: "done" },
-        { op: "Final assembly",  wc: "ASM-1",  hrs: 5, s: "done" },
-        { op: "Testing",         wc: "TEST-1", hrs: 3, s: "done" },
-        { op: "Packing",         wc: "PACK-1", hrs: 3, s: "done" },
-      ], stoppages: [], rejections: [] },
-  ],
-  "20790": [
-    { mo: "MO-20790-1", soLine: "020790-1-1", item: "WP-1600 engineered fan", kind: "fg", qty: 1, needDate: "20-11-2026",
-      direction: "backward", schedStart: "15-07-2026", schedEnd: "18-11-2026", frozen: true,
-      status: "started", startAt: "15-07-26 08:00", stopAt: null, waitingFor: null, closurePosted: false,
-      route: [
-        { op: "Material cutting",                wc: "ROLL-1",  hrs: 8,  s: "done" },
-        { op: "Flange machining",                wc: "HMC-1",   hrs: 16, s: "done" },
-        { op: "Casing rolling & long-seam weld", wc: "WELD-1",  hrs: 40, s: "done" },
-        { op: "Radiography test",                wc: "TEST-1",  hrs: 6,  s: "hold-waiting", hold: true, note: "Contractual hold — customer inspector 12-09" },
-        { op: "Galvanising",                     wc: "SC-GALV", hrs: 0,  subcontract: true, leadDays: 7, s: "queued" },
-        { op: "Casing fit-up & welding",         wc: "FITUP-1", hrs: 24, s: "queued" },
-        { op: "Dye penetrant test",              wc: "TEST-1",  hrs: 4,  hold: true, s: "queued" },
-        { op: "Final assembly",                  wc: "ASM-1",   hrs: 20, s: "queued", note: "Starts on 160 kW motor receipt (due 10-10)" },
-        { op: "Testing & balancing",             wc: "BAL-1",   hrs: 12, s: "queued" },
-        { op: "Paint & pack",                    wc: "PACK-1",  hrs: 8,  s: "queued" },
-      ], stoppages: [], rejections: [] },
-  ],
-  "15288": [
-    { mo: "MO-15288-1", soLine: "015288-1-1", item: "NAF/1120-35012 (E-Block ×7)", kind: "fg", qty: 7, needDate: "22-08-2026",
-      direction: "backward", schedStart: null, schedEnd: null, frozen: false,
-      status: "unscheduled", startAt: null, stopAt: null, waitingFor: "route", closurePosted: false,
-      route: [
-        { op: "Parts machining",    wc: "HMC-1",  hrs: 30, s: "not-started" },
-        { op: "Casing fabrication", wc: "WELD-2", hrs: 60, s: "not-started" },
-        { op: "Final assembly",     wc: "ASM-1",  hrs: 40, s: "not-started", note: "6 of 7 motors received 15-06; order stalled, route not re-entered" },
-      ], stoppages: [], rejections: [] },
-  ],
-  /* 20262 (service), 19449 (bought-out spare), 18902 (cancelled):
-     no manufacturing order — not scheduled or tracked here. */
 };
 
 /* The agreed SAP Business One interfaces (§16.1). dir: from | to | both.
@@ -1031,18 +904,18 @@ const INTERFACES = [
   { n: "Bill of material & route",                dir: "from", st: "ok",    passes: "The BOM and route against each MO, used for scheduling." },
   { n: "Inventory on hand",                       dir: "from", st: "ok",    passes: "Stock used to check material availability for the start of each order." },
   { n: "Open purchase orders",                    dir: "from", st: "ok",    passes: "Open orders and the lead time per item code; dates bought-out material." },
-  { n: "Manufacturing order closure",             dir: "to",   st: "retry", passes: "START/STOP closure; SAP closes the MO and issues material by backflush." },
+  { n: "Manufacturing order closure",             dir: "to",   st: "ok",    passes: "START/STOP closure; SAP closes the MO and issues material by backflush." },
 ];
 
 /* One audit trail of every interface message: numbered, idempotent,
    retried on failure, searchable by document / order / user / time
    (§16.1, §7.2). st: posted | retry | fail. */
 const AUDIT = [
-  { id: "MSG-20481", dir: "to",   doc: "MO closure",           order: "20736", ref: "MO-20736-1", st: "retry",  tries: 2, when: "02-09-26 11:31", note: "Closure not yet acknowledged by SAP B1 — retrying" },
-  { id: "MSG-20480", dir: "to",   doc: "MO closure",           order: "19415", ref: "MO-19415-1", st: "posted", tries: 1, when: "24-08-26 16:02", note: "Manufacturing order closed; material issued by backflush" },
-  { id: "MSG-20479", dir: "both", doc: "Calendar change",      order: "—",     ref: "WELD-1",     st: "posted", tries: 1, when: "08-09-26 09:05", note: "Extra shift 08–13 Sep sent back to SAP B1" },
-  { id: "MSG-20478", dir: "from", doc: "BOM & route",          order: "20790", ref: "MO-20790-1", st: "posted", tries: 1, when: "08-09-26 06:00", note: "Nightly read — routes refreshed" },
-  { id: "MSG-20477", dir: "from", doc: "Open purchase orders", order: "19962", ref: "Motor 15 kW",st: "posted", tries: 1, when: "08-09-26 06:00", note: "Still open, due 25-08 — overdue" },
+  { id: "MSG-30006", dir: "from", doc: "Operations & resources", order: "—", ref: "Work centres", st: "posted", tries: 1, when: "08-09-26 06:00", note: "Nightly read — 59 work centres across 10 groups" },
+  { id: "MSG-30005", dir: "from", doc: "Factory shift hours", order: "—", ref: "Calendar", st: "posted", tries: 1, when: "08-09-26 06:00", note: "Shift 1 / Shift 2 / General / Afternoon — 8 h each" },
+  { id: "MSG-30004", dir: "from", doc: "Open sales orders & MOs", order: "18381", ref: "OA 18381", st: "posted", tries: 1, when: "08-09-26 06:00", note: "Four lines read for RBI490-840" },
+  { id: "MSG-30003", dir: "from", doc: "BOM & route", order: "18381", ref: "RBI490-840", st: "posted", tries: 1, when: "08-09-26 06:00", note: "9 make-parts, 32-operation route read for scheduling" },
+  { id: "MSG-30002", dir: "from", doc: "Open purchase orders", order: "18381", ref: "Pulleys / V-belts", st: "posted", tries: 1, when: "08-09-26 06:00", note: "Bought-out items dated by lead time" },
 ];
 
 /* ============================================================
@@ -1059,17 +932,7 @@ const NOTIF_RULES = {
   management: ["Orders behind the schedule", "Delivery date at risk", "Overloaded work centres", "Interface failure that does not clear"],
   admin:      ["Interface failure that does not clear", "SAP Business One data not current"],
 };
-const NOTIFICATIONS = [
-  { id: "N1", roles: ["planning", "management"], level: "risk", title: "Work centre overloaded — Casing fit-up", sub: "FITUP-1 at 183% this week; 5 jobs share the 30-07 need date.", when: "08-09 · 08:05", oa: null },
-  { id: "N2", roles: ["planning", "projects", "management"], level: "risk", title: "Schedule slipping against the committed date", sub: "OA 19962 — 15 kW motor 14 days overdue; committed date moved to 08-09.", when: "08-09 · 09:20", oa: "19962" },
-  { id: "N3", roles: ["planning", "management"], level: "warn", title: "Closure delayed", sub: "OA 20736 stopped 02-09 but the closure has not posted to SAP B1.", when: "02-09 · 11:31", oa: "20736" },
-  { id: "N4", roles: ["planning"], level: "warn", title: "Bought-out part late", sub: "OA 20422 — customer motor 13 days past the open-PO due date.", when: "08-09 · 09:00", oa: "20422" },
-  { id: "N5", roles: ["supervisor"], level: "warn", title: "Stop overdue against the schedule", sub: "MO-19962-3 should have stopped by 28-07; still running (held on motor).", when: "08-09 · 07:30", oa: "19962" },
-  { id: "N6", roles: ["supervisor"], level: "info", title: "Manufacturing order re-scheduled for your section", sub: "MO-20790-1 fit-up moved after the 12-09 radiography hold.", when: "06-09 · 16:10", oa: "20790" },
-  { id: "N7", roles: ["projects"], level: "warn", title: "Order put on hold", sub: "OA 15288 marked on hold — awaiting a commercial decision.", when: "01-09 · 10:00", oa: "15288" },
-  { id: "N8", roles: ["projects", "planning"], level: "info", title: "Revised delivery date recorded", sub: "OA 18616 committed date moved to 07-09 (third rework).", when: "28-08 · 17:30", oa: "18616" },
-  { id: "N9", roles: ["management", "admin"], level: "risk", title: "Interface failure not clearing", sub: "MO closure to SAP B1 has retried twice (MSG-20481).", when: "02-09 · 11:31", oa: "20736" },
-];
+const NOTIFICATIONS = [];
 
 /* Thresholds that trigger notifications & exceptions — set by Nadi
    Airtechnics; some still to be confirmed (§15, §17.15). */
@@ -1141,32 +1004,11 @@ const MOBILE = [
 
 /* Revised-delivery-date history (§13): original committed date + each
    revision, with the reason and the author kept. Keyed by OA. */
-const REVISIONS = {
-  "19962": [
-    { date: "25-08-2026", kind: "Committed", by: "Planning — A. Nair", reason: "Committed date from the firmed schedule" },
-    { date: "08-09-2026", kind: "Revised",   by: "Planning — A. Nair", reason: "15 kW motor not received — two weeks lost on Crompton" },
-  ],
-  "18616": [
-    { date: "26-08-2026", kind: "Committed", by: "Planning — A. Nair", reason: "Committed date from the firmed schedule" },
-    { date: "02-09-2026", kind: "Revised",   by: "Projects — R. Mehta", reason: "First leak at customer inspection; reseal" },
-    { date: "07-09-2026", kind: "Revised",   by: "Projects — R. Mehta", reason: "Third leak after reassembly — needs a decision, not another rebuild" },
-  ],
-  "20422": [
-    { date: "26-08-2026", kind: "Committed", by: "Planning — A. Nair", reason: "Committed date from the firmed schedule" },
-    { date: "08-09-2026", kind: "Revised",   by: "Projects — R. Mehta", reason: "Customer-scope motor not received — delay recorded as the customer's" },
-  ],
-  "15288": [
-    { date: "20-08-2026", kind: "Committed", by: "Planning — A. Nair", reason: "Committed date from the firmed schedule" },
-    { date: "02-09-2026", kind: "Revised",   by: "Management — P. Joshi", reason: "Order stalled; held pending a commercial decision" },
-  ],
-};
+const REVISIONS = {};
 
 /* Planned maintenance & downtime that reduce a work centre's available
    hours (§10.1.4). kind: maintenance | downtime (downtime also feeds OEE). */
-const MAINTENANCE = [
-  { wc: "HMC-1",  kind: "maintenance", from: "10-09-2026", to: "10-09-2026", hrsPerDay: 2, note: "Preventive — spindle service" },
-  { wc: "ROLL-1", kind: "downtime",    from: "08-09-2026", to: "09-09-2026", hrsPerDay: 8, note: "Breakdown — hydraulic repair (logged for OEE)" },
-];
+const MAINTENANCE = [];
 
 /* Exception tables, per area, from the role flows (§9, §10, §11). Shown
    as the "handled here" reference beside each pillar. */
@@ -1194,9 +1036,7 @@ const EXCEPTIONS = {
 };
 
 /* BOM/route changes in progress — Planning updates, planner re-schedules (§9.1.8). */
-const BOM_CHANGES = [
-  { oa: "20790", mo: "MO-20790-1", what: "Route change — dye-penetrant test added after fit-up", by: "Planning — A. Nair", when: "06-09-2026" },
-];
+const BOM_CHANGES = [];
 
 /* The order process at a glance — the five stages the platform follows (§8). */
 const ORDER_STAGES = [
@@ -1259,16 +1099,7 @@ const NAV = {
   integration: "Integration & audit", admin: "Administration", orders: "Orders",
 };
 
-const ATTENTION = [
-  { id: 1, roles: ["purchase", "planning", "management"], level: "risk", oa: "19962", title: "Motor 14 days overdue", sub: "15 kW from Crompton. All four sub-assemblies are ready and waiting on it.", due: "Overdue", action: "Chase supplier" },
-  { id: 2, roles: ["projects", "planning", "management"], level: "risk", oa: "20422", title: "Customer motor 13 days overdue", sub: "Motor is in the customer's scope. Nadi's work has been finished since 24-08.", due: "Overdue", action: "Raise with customer" },
-  { id: 3, roles: ["quality", "supervisor", "management"], level: "risk", oa: "18616", title: "Third leak on the same unit", sub: "Leak returned after reassembly. Replacing the seal has not fixed it.", due: "Overdue", action: "Root cause" },
-  { id: 4, roles: ["dispatch", "management"], level: "warn", oa: "19415", title: "8 units billed but not moved", sub: "₹16,75,262 invoiced in August. Only the crate is missing.", due: "Overdue", action: "Raise crate" },
-  { id: 5, roles: ["quality"], level: "warn", oa: "20790", title: "Radiography hold point due 12-09", sub: "Customer inspector needs to be on site. Fit-up cannot start until it passes.", due: "Due 12-09", action: "Schedule" },
-  { id: 6, roles: ["dispatch"], level: "info", oa: "20736", title: "Ready to leave today", sub: "All five dispatch conditions met. Packed since 02-09.", due: "Due today", action: "Book transport" },
-  { id: 7, roles: ["projects", "management"], level: "warn", oa: "18616", title: "Repeat leak — needs a decision", sub: "Third leak after reassembly. A call is needed, not another rebuild.", due: "This week", action: "Review" },
-  { id: 8, roles: ["supervisor"], level: "warn", oa: "19962", title: "Assembly bay held since 25-08", sub: "JOB-4412 cannot start without the motor. Bay 2 idle.", due: "14 days", action: "Reassign bay" },
-];
+const ATTENTION = [];
 
 
 /* ------------------------------------------------------------
@@ -1276,59 +1107,7 @@ const ATTENTION = [
    (Yes / No / Thinking) and a threaded comment. Seeded, then
    extended live from the "Viewing as" role. Contained to the order.
    ------------------------------------------------------------ */
-const DISCUSSIONS = {
-  "19962": {
-    stances: { purchase: "thinking", planning: "no", supervisor: "no", projects: "thinking" },
-    comments: [
-      { id: "d1", role: "planning", stance: "no", text: "Won't commit a firm date until Purchase confirms the motor. The four sub-assemblies are ready — this is a supplier problem, not a plan problem.", when: "08-09 · 09:20" },
-      { id: "d2", role: "purchase", stance: "thinking", text: "Crompton now say 08-09. Chasing a written confirmation before I stand behind it.", when: "07-09 · 16:05" },
-      { id: "d3", role: "supervisor", stance: "no", text: "Assembly bay 2 has been idle since 25-08 waiting on this. Can't hold it much longer.", when: "06-09 · 11:40" },
-    ],
-  },
-  "18616": {
-    stances: { quality: "no", projects: "thinking", planning: "thinking" },
-    comments: [
-      { id: "d1", role: "quality", stance: "no", text: "Third leak on the same joint. Replacing the seal has not fixed it — I won't release another rebuild until we root-cause the failure.", when: "28-08 · 16:45" },
-      { id: "d2", role: "projects", stance: "thinking", text: "This order has slipped through three rebuilds now. We may need a commercial decision with the customer rather than a fourth rebuild.", when: "28-08 · 17:30" },
-      { id: "d3", role: "planning", stance: "thinking", text: "Agree — holding the slot but not re-loading production until Quality closes the root cause.", when: "29-08 · 09:15" },
-    ],
-  },
-  "20422": {
-    stances: { projects: "no", planning: "thinking" },
-    comments: [
-      { id: "d1", role: "projects", stance: "no", text: "The motor is in the customer's scope and 13 days overdue. The revised date must record the delay as theirs, not ours.", when: "26-08 · 18:10" },
-      { id: "d2", role: "planning", stance: "thinking", text: "Nadi-scope work finished 24-08. Ready to close the moment their motor lands.", when: "27-08 · 10:00" },
-    ],
-  },
-  "19415": {
-    stances: { dispatch: "yes", management: "thinking" },
-    comments: [
-      { id: "d1", role: "dispatch", stance: "yes", text: "Only the wooden crate is open. Raise clearance and I can book transport for all 8 units today.", when: "05-09 · 14:20" },
-      { id: "d2", role: "management", stance: "thinking", text: "₹16.75 L billed and sitting in the yard since late August. Why did crate clearance never get raised?", when: "05-09 · 15:00" },
-    ],
-  },
-  "20736": {
-    stances: { dispatch: "yes", quality: "yes" },
-    comments: [
-      { id: "d1", role: "quality", stance: "yes", text: "Released 01-09. As-built BOM frozen. No open points from my side.", when: "01-09 · 12:00" },
-      { id: "d2", role: "dispatch", stance: "yes", text: "Packed since 02-09. All five conditions met — this one can leave today.", when: "02-09 · 11:35" },
-    ],
-  },
-  "20790": {
-    stances: { quality: "thinking", projects: "yes" },
-    comments: [
-      { id: "d1", role: "quality", stance: "thinking", text: "Radiography on 12-09 is a contractual hold point — need the customer's inspector on site. Fit-up cannot start until it passes.", when: "05-09 · 17:10" },
-      { id: "d2", role: "projects", stance: "yes", text: "Customer inspector confirmed for 12-09. On track for the 30-11 promise.", when: "06-09 · 09:30" },
-    ],
-  },
-  "15288": {
-    stances: { management: "no", projects: "thinking" },
-    comments: [
-      { id: "d1", role: "management", stance: "no", text: "Stalled for weeks with no movement. Stop carrying it as live — either cancel it or revive it with a real date and a fresh commercial position.", when: "01-09 · 10:00" },
-      { id: "d2", role: "projects", stance: "thinking", text: "Checking whether the customer still wants the 7 units or if we scrap the WIP against the advance.", when: "02-09 · 14:15" },
-    ],
-  },
-};
+const DISCUSSIONS = { "18381": { comments: [] } };
 
 /* v3 revenue plan removed — the platform holds no money figures;
    everything that carries a value stays in SAP Business One (§5.3). */
@@ -1417,9 +1196,10 @@ function roleAvatar(r) { return ROLES[r] ? initials(ROLES[r].person) : roleLabel
 /* Order rail — the Projects model from the Functional Flow (§13):
    holds, the committed-vs-promised dates, and threaded comments.
    No silent handoffs; everything stays on the order, not a spreadsheet. */
-function Discussion({ order, role, disc, onPost }) {
+function Discussion({ order, role, disc, onPost, holds }) {
   const [text, setText] = useState("");
   const comments = disc?.comments || [];
+  const allHolds = [...(holds || []), ...(order.exceptions || [])];
   const moved = order.revised && order.revised !== order.promise && order.revised !== "—";
 
   const submit = () => {
@@ -1457,9 +1237,9 @@ function Discussion({ order, role, disc, onPost }) {
               ))}
             </div>
           )}
-          {(order.exceptions || []).length === 0
+          {allHolds.length === 0
             ? <div className="tiny muted" style={{ paddingTop: 6 }}>No holds recorded.</div>
-            : (order.exceptions || []).map((e, i) => (
+            : allHolds.map((e, i) => (
               <div className="cmt" key={i} style={{ marginTop: 8 }}>
                 <div className="cmt-body">
                   <div className="cmt-top"><span className="cmt-role">{e.t}</span><span className="cmt-when">{e.due}</span></div>
@@ -1553,33 +1333,28 @@ function Today({ role, open }) {
           </div>
           <div className="card">
             <div className="card-head"><span className="card-title">Handoffs waiting for you</span></div>
-            <div className="att">
-              <div className="att-bar info" />
-              <div className="att-body">
-                <div className="att-title">Radiography hold point ready to schedule</div>
-                <div className="att-sub">OA 20790 · sent 05-09 by Production · casing welded, awaiting inspection</div>
-              </div>
-              <button className="btn sm ghost">Accept</button>
-            </div>
-            <div className="att">
-              <div className="att-bar info" />
-              <div className="att-body">
-                <div className="att-title">Production release for casing fit-up</div>
-                <div className="att-sub">OA 20790 · sent 05-09 by Planning · drawing R1 attached</div>
-              </div>
-              <button className="btn sm ghost">Accept</button>
-            </div>
+            <div className="empty"><b>No handoffs waiting</b>Nothing has been passed to you for action.</div>
           </div>
         </div>
         <div className="stack">
           <div className="card card-pad">
             <h2 className="sec">Delivery position</h2>
-            {[["On promise", 18, ""], ["At risk", 4, "warn"], ["Blocked", 3, "risk"], ["Ready to leave", 2, ""]].map(([k, v, c]) => (
-              <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
-                <span className="muted">{k}</span>
-                <b style={{ color: c === "risk" ? "var(--risk)" : c === "warn" ? "var(--warn)" : "inherit" }}>{v}</b>
-              </div>
-            ))}
+            {(() => {
+              const ls = ORDERS.flatMap((o) => (o.lines && o.lines.length ? o.lines : [{ state: o.state, checkpoint: o.checkpoint }]));
+              const n = (f) => ls.filter(f).length;
+              const rows = [
+                ["On promise", n((l) => l.state === "on-track"), ""],
+                ["At risk", n((l) => l.state === "at-risk" || l.state === "warn" || l.state === "watch"), "warn"],
+                ["Blocked", n((l) => l.state === "blocked"), "risk"],
+                ["Ready to leave", n((l) => l.checkpoint === "Quality released" || l.checkpoint === "Dispatched"), ""],
+              ];
+              return rows.map(([k, v, c]) => (
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
+                  <span className="muted">{k}</span>
+                  <b style={{ color: c === "risk" ? "var(--risk)" : c === "warn" ? "var(--warn)" : "inherit" }}>{v}</b>
+                </div>
+              ));
+            })()}
           </div>
           <div className="card">
             <div className="card-head"><span className="card-title">Operational signals</span><span className="tiny muted">From the schedule, capacity &amp; closures</span></div>
@@ -1681,13 +1456,22 @@ function Orders({ open, toast }) {
   );
 }
 
-function Workspace({ order, back, role, disc, onPost }) {
+function Workspace({ order, back, role, disc, onPost, onHold, holds, toast }) {
   const buildTab = order.cls === "Project" ? "Operations" : "Build";
   const [tab, setTab] = useState("Overview");
   const [catchOpen, setCatchOpen] = useState(true);
+  const [compose, setCompose] = useState(null); // "note" | "exc" | null
+  const [draft, setDraft] = useState("");
   const tabs = ["Overview", buildTab, "Supply", "Dispatch gate", "Documents"];
   const slowIntake = order.oa === "19415";
   const decode = LEGACY_MAP[order.legacy];
+  const submitCompose = () => {
+    const t = draft.trim();
+    if (!t) return;
+    if (compose === "note") { onPost(order.oa, { role, text: t, when: "Just now" }); toast && toast("Note added to the order"); }
+    else { onHold && onHold(order.oa, { t: "Hold raised", sub: t, owner: (ROLES[role] && ROLES[role].label) || role, due: "Open", level: "warn", when: "Just now" }); toast && toast("Exception raised on the order"); }
+    setDraft(""); setCompose(null);
+  };
 
   return (
     <div className="page">
@@ -1732,9 +1516,21 @@ function Workspace({ order, back, role, disc, onPost }) {
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <button className="btn ghost">Add note</button>
-            <button className="btn">Raise exception</button>
+            <button className={`btn ghost ${compose === "note" ? "on" : ""}`} onClick={() => setCompose(compose === "note" ? null : "note")}>Add note</button>
+            <button className={`btn ${compose === "exc" ? "on" : ""}`} onClick={() => setCompose(compose === "exc" ? null : "exc")}>Raise exception</button>
           </div>
+          {compose && (
+            <div style={{ marginTop: 10, border: "1px solid var(--line)", borderRadius: 8, padding: 10 }}>
+              <div className="tiny muted" style={{ marginBottom: 6 }}>
+                {compose === "note" ? "Add a note to this order — it is kept against the order’s comments." : "Raise an exception / hold — it is recorded against the order with you as owner."}
+              </div>
+              <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={2} placeholder={compose === "note" ? "Your note…" : "What is the hold, and what is needed to clear it?"} style={{ width: "100%", boxSizing: "border-box", resize: "vertical", font: "inherit", padding: 8, border: "1px solid var(--line)", borderRadius: 6 }} />
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button className="btn sm" onClick={submitCompose}>{compose === "note" ? "Add note" : "Raise exception"}</button>
+                <button className="btn sm ghost" onClick={() => { setCompose(null); setDraft(""); }}>Cancel</button>
+              </div>
+            </div>
+          )}
         </div>
         <div className="ohead-stages"><Spine current={order.checkpoint} blocked={order.state === "blocked"} /></div>
       </div>
@@ -1943,7 +1739,7 @@ function Workspace({ order, back, role, disc, onPost }) {
       </div>
         </div>
         <aside className="ws-rail">
-          <Discussion order={order} role={role} disc={disc} onPost={onPost} />
+          <Discussion order={order} role={role} disc={disc} onPost={onPost} holds={holds} />
         </aside>
       </div>
     </div>
@@ -1969,7 +1765,7 @@ function allMOs() {
 /* Daily in-house hours of a work centre (subcontract has none). */
 function wcDailyHours(w) {
   if (w.subcontract) return null;
-  return (w.shiftHrs || 0) * (w.shifts || 1) - (w.downtime || 0);
+  return (w.shiftHrs || 0) * (w.shifts || 1) * (w.qty || 1) - (w.downtime || 0);
 }
 /* Planned maintenance / downtime hours that reduce a WC this period (§10.1.4). */
 function wcMaintenance(wcId, period) {
@@ -2673,6 +2469,9 @@ function OrderStands({ open }) {
 /* ---- Integration & audit (§16.1) ---- */
 const IFACE_DIR = { from: "← from SAP", to: "→ to SAP", both: "↔ both ways" };
 function Integration({ toast }) {
+  const [q, setQ] = useState("");
+  const ql = q.trim().toLowerCase();
+  const rows = ql ? AUDIT.filter((a) => [a.id, a.doc, a.order, a.ref, a.when, a.note, IFACE_DIR[a.dir]].filter(Boolean).join(" ").toLowerCase().includes(ql)) : AUDIT;
   return (
     <div className="page">
       <div className="page-head">
@@ -2681,7 +2480,7 @@ function Integration({ toast }) {
           <div className="subtitle">Every message to and from SAP Business One — numbered, idempotent, retried on failure, and searchable.</div>
         </div>
         <div className="search" style={{ maxWidth: 280 }}>
-          <span className="muted">⌕</span><input placeholder="Search by document, order, user or time" />
+          <span className="muted">⌕</span><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by document, order, user or time" />
         </div>
       </div>
 
@@ -2707,7 +2506,7 @@ function Integration({ toast }) {
         <table className="tbl">
           <thead><tr><th>Message</th><th>Document</th><th>Order / ref</th><th>When</th><th>State</th><th></th></tr></thead>
           <tbody>
-            {AUDIT.map((a) => (
+            {rows.length === 0 ? <tr><td colSpan={6} className="tiny muted" style={{ padding: "12px 14px" }}>No message matches “{q}”.</td></tr> : rows.map((a) => (
               <tr key={a.id}>
                 <td className="mono tiny">{a.id}<div className="tiny muted">{IFACE_DIR[a.dir]} · try {a.tries}</div></td>
                 <td>{a.doc}<div className="tiny muted">{a.note}</div></td>
@@ -2724,9 +2523,53 @@ function Integration({ toast }) {
   );
 }
 
+/* Notifications derived live from the schedule & capacity the platform owns
+   (§15): schedule slip against the committed date, work-centre overload and
+   equal-priority clashes are computed facts, not hand-entered events. The
+   seed NOTIFICATIONS list stays empty until someone acts on the shop floor. */
+function liveNotifications() {
+  const out = [];
+  const when = "08-09 · 06:10";
+  for (const o of ORDERS) {
+    const byLine = {};
+    for (const m of (MOS[o.oa] || [])) (byLine[m.soLine] = byLine[m.soLine] || []).push(m);
+    for (const [soLine, mos] of Object.entries(byLine)) {
+      const line = (o.lines || []).find((l) => l.epicor === soLine);
+      const promise = line ? line.promise : o.promise;
+      const end = mos.map((m) => m.schedEnd).filter(Boolean).sort((a, b) => cmpDate(a, b)).pop();
+      const d = end && promise ? daysBetween(end, promise) : null;
+      if (d != null && d > 0) out.push({
+        id: "LN-slip-" + soLine, roles: ["planning", "projects", "management"], level: "risk",
+        title: "Schedule slipping against the committed date",
+        sub: "Line " + soLine + " — scheduled end " + end + " is " + d + " day" + (d > 1 ? "s" : "") + " past the " + promise + " date.",
+        when, oa: o.oa,
+      });
+    }
+  }
+  const load = wcLoad();
+  for (const w of WORKCENTRES) {
+    if (w.subcontract) continue;
+    const avail = wcAvailable(w, "week");
+    if (avail > 0 && (load[w.id] || 0) > avail) out.push({
+      id: "LN-over-" + w.id, roles: ["planning", "management"], level: "risk",
+      title: "Work centre overloaded — " + w.name,
+      sub: w.id + " at " + Math.round((load[w.id] / avail) * 100) + "% of its weekly hours (" + load[w.id] + " h vs " + avail + " h available).",
+      when, oa: null,
+    });
+  }
+  const clashes = wcClashes();
+  if (clashes.length) out.push({
+    id: "LN-clash", roles: ["planning"], level: "warn",
+    title: "Equal-priority clashes to sequence",
+    sub: clashes.length + " work-centre / need-date clashes flagged — same need date, same centre (§9.1.3). The planner sequences them.",
+    when, oa: null,
+  });
+  return out;
+}
+
 /* ---- Notifications (§15) ---- */
 function Notifications({ role, open }) {
-  const items = NOTIFICATIONS.filter((n) => n.roles.includes(role));
+  const items = liveNotifications().filter((n) => n.roles.includes(role));
   const rules = NOTIF_RULES[role] || [];
   return (
     <div className="page">
@@ -2900,6 +2743,8 @@ export default function App() {
   const [oa, setOa] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
   const [disc, setDisc] = useState(DISCUSSIONS);
+  const [holds, setHolds] = useState({});
+  const [query, setQuery] = useState("");
 
   const cfg = ROLES[role];
   const order = ORDERS.find((o) => o.oa === oa);
@@ -2914,16 +2759,23 @@ export default function App() {
     const comment = { id: "u" + Date.now(), ...entry };
     return { ...d, [oaId]: { ...cur, comments: [comment, ...cur.comments] } };
   });
+  const raiseHold = (oaId, entry) => setHolds((h) => ({ ...h, [oaId]: [{ ...entry }, ...(h[oaId] || [])] }));
+
+  const ql = query.trim().toLowerCase();
+  const results = ql
+    ? ORDERS.filter((o) => [o.oa, o.epicor, o.sap, o.custPo, o.customer, o.model, ...(o.lines || []).flatMap((l) => [l.epicor, l.model])]
+        .filter(Boolean).join(" ").toLowerCase().includes(ql)).slice(0, 8)
+    : [];
 
   const moList = allMOs();
   const schedCount = moList.filter((m) => m.status !== "unscheduled").length;
   const loadMap = wcLoad();
   const overCount = WORKCENTRES.filter((w) => !w.subcontract && (loadMap[w.id] || 0) > wcAvailable(w, "week")).length;
-  const notifCount = NOTIFICATIONS.filter((n) => n.roles.includes(role)).length;
+  const notifCount = liveNotifications().filter((n) => n.roles.includes(role)).length;
   const counts = { today: attn, schedule: schedCount, capacity: overCount, shopfloor: schedCount, stands: ORDERS.length, dashboards: 4, notifications: notifCount, integration: AUDIT.filter((a) => a.st !== "posted").length, admin: TOCONFIRM.length, orders: ORDERS.length };
 
   let body;
-  if (order) body = <Workspace order={order} back={() => setOa(null)} role={role} disc={disc[order.oa]} onPost={postComment} />;
+  if (order) body = <Workspace order={order} back={() => setOa(null)} role={role} disc={disc[order.oa]} onPost={postComment} onHold={raiseHold} holds={holds[order.oa] || []} toast={toast} />;
   else if (view === "today") body = <Today role={role} open={open} />;
   else if (view === "schedule") body = <Schedule open={open} toast={toast} />;
   else if (view === "capacity") body = <Capacity toast={toast} />;
@@ -2973,9 +2825,20 @@ export default function App() {
 
       <main className="main">
         <header className="topbar">
-          <div className="search">
+          <div className="search" style={{ position: "relative" }}>
             <span className="muted">⌕</span>
-            <input placeholder="Search OA, Epicor line, SAP order, customer PO, customer or model" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search OA, Epicor line, SAP order, customer PO, customer or model" />
+            {ql && (
+              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#fff", border: "1px solid var(--line)", borderRadius: 8, marginTop: 4, boxShadow: "0 6px 20px rgba(0,0,0,0.08)", zIndex: 30, overflow: "hidden" }}>
+                {results.length === 0
+                  ? <div className="tiny muted" style={{ padding: "10px 14px" }}>No order matches “{query}”.</div>
+                  : results.map((o) => (
+                    <button key={o.oa} style={{ display: "block", width: "100%", textAlign: "left", padding: "9px 14px", background: "none", border: "none", borderBottom: "1px solid var(--line)", cursor: "pointer" }} onClick={() => { open(o.oa); setQuery(""); }}>
+                      <span className="mono" style={{ fontWeight: 600 }}>OA {o.oa}</span> <span className="tiny muted">{o.customer} · {o.model}</span>
+                    </button>
+                  ))}
+              </div>
+            )}
           </div>
           <div className="topbar-meta">
             <span>Tuesday, 8 September 2026</span>
