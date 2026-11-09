@@ -352,15 +352,8 @@ const DRIVE_NOTE = {
 /* Product code from the sheet's CODE column (not a lifecycle field). */
 const CODE_LABEL = { A: "Axial (NAF)", C: "Centrifugal", S: "Silencer", SERVICE: "Service / spares" };
 
-const STANCE_MAP = {
-  yes:      { cls: "yes", glyph: "●", label: "Yes" },
-  no:       { cls: "no", glyph: "■", label: "No" },
-  thinking: { cls: "thinking", glyph: "◆", label: "Thinking" },
-  awaiting: { cls: "awaiting", glyph: "○", label: "Awaiting" },
-};
-
-/* Roles that hold a position on an order decision, in handoff order. */
-const STAKEHOLDERS = ["sales", "projects", "planning", "design", "purchase", "stores", "supervisor", "quality", "dispatch", "management"];
+/* v3 stance voting (Yes/No/Thinking) removed — the V6 reframe uses
+   the lighter Projects model of holds + comments + revised dates (§13). */
 
 /* ------------------------------------------------------------
    Data, shaped from the live Pending Order workbook
@@ -792,32 +785,478 @@ const ORDERS = [
   },
 ];
 
-const JOBS = [
-  { job: "JOB-4423", oa: "20790", op: "Flange machining", section: "Machine Shop", qty: 4, done: 2, state: "In progress", by: "P. Jadhav", since: "08:15" },
-  { job: "JOB-4420", oa: "20790", op: "Casing fitup & welding", section: "Fabrication", qty: 1, done: 0, state: "Ready", by: "—", since: "—" },
-  { job: "JOB-4412", oa: "19962", op: "Final assembly", section: "Assembly", qty: 1, done: 0, state: "Blocked", by: "—", since: "25-08" },
-  { job: "JOB-4415", oa: "18616", op: "Seal reassembly", section: "Assembly", qty: 1, done: 0, state: "Rework", by: "—", since: "28-08" },
-  { job: "JOB-4421", oa: "20736", op: "Final packing", section: "Packing", qty: 1, done: 1, state: "Complete", by: "N. Gawde", since: "—" },
+/* v3 operator JOBS list removed — shop-floor status now comes from the
+   MOS model and the Shop floor view (START/STOP at MO level, §11). */
+
+/* ============================================================
+   V6 FUNCTIONAL FLOW — scheduling / capacity / shop-floor model
+   ------------------------------------------------------------
+   The Functional Flow (v1.5) re-centres the platform on three
+   ranked pillars around SAP Business One: finite-capacity
+   SCHEDULING (§9), CAPACITY planning (§10) and shop-floor
+   START/STOP tracking (§11). The unit of work is the
+   Manufacturing Order (MO) under a sales-order line, each with a
+   ROUTE of operations on WORK CENTRES. SAP B1 is read for
+   masters; the platform owns the schedule, the frozen schedule,
+   load-vs-capacity, START/STOP, stoppages/rejections and the
+   closure it posts back (§5.3, §7).
+
+   These are side-structures keyed by OA (same pattern as
+   DISCUSSIONS / REVENUE) so existing views keep working while
+   the pillar views are built on top. Fixed "today" = 08-09-2026.
+   ============================================================ */
+
+/* Work groups — read from SAP B1 (§7.1.2); no duplicate set-up here. */
+const WORKGROUPS = [
+  { id: "MS",    name: "Machine Shop" },
+  { id: "FAB",   name: "Fabrication & Casing Shop" },
+  { id: "ASM",   name: "Assembly" },
+  { id: "TEST",  name: "Testing & Balancing" },
+  { id: "PAINT", name: "Paint & Finish" },
+  { id: "PACK",  name: "Packing" },
+  { id: "SUB",   name: "Subcontract" },
 ];
 
+/* Work centres under each group. Capacity = shiftHrs × shifts per
+   working day (Mon–Sat), from the shift calendar read from SAP B1
+   (§7.1.3). Each work centre runs one job at a time; set-up time is
+   already in the route hours (§9.1.2). Subcontract centres are dated
+   by lead time, not by in-house hours (§9.1.7). */
+const WORKCENTRES = [
+  { id: "VTL-1",   name: "Vertical turret lathe",       group: "MS",   shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "HMC-1",   name: "Horizontal machining centre", group: "MS",   shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "DRILL-1", name: "Radial drill",                group: "MS",   shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "ROLL-1",  name: "Plate rolling",               group: "FAB",  shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "WELD-1",  name: "Welding bay 1",               group: "FAB",  shiftHrs: 8, shifts: 2, downtime: 0 },
+  { id: "WELD-2",  name: "Welding bay 2",               group: "FAB",  shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "FITUP-1", name: "Casing fit-up",               group: "FAB",  shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "ASM-1",   name: "Assembly bay 1",              group: "ASM",  shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "ASM-2",   name: "Assembly bay 2",              group: "ASM",  shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "BAL-1",   name: "Dynamic balancing",           group: "TEST", shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "TEST-1",  name: "Test rig",                    group: "TEST", shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "PAINT-1", name: "Paint booth",                 group: "PAINT",shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "PACK-1",  name: "Packing & crating",           group: "PACK", shiftHrs: 8, shifts: 1, downtime: 0 },
+  { id: "SC-GALV", name: "Galvanising (subcontract)",   group: "SUB",  subcontract: true, leadDays: 7 },
+  { id: "SC-MACH", name: "Heavy machining (subcontract)",group: "SUB", subcontract: true, leadDays: 10 },
+];
+
+/* Overtime / extra-shift changes are made in the platform and sent
+   back to SAP B1 (§9.1.9). Each entry adds hours to a work centre's
+   available capacity for the dates concerned. Platform-held (§7.2). */
+const CAL_ADJUST = [
+  { wc: "WELD-1", from: "08-09-2026", to: "13-09-2026", kind: "Extra shift", addHrsPerDay: 8, by: "Planning — A. Nair", note: "Carrying the WP-1600 casing-welding load" },
+];
+
+/* Bought-out material, keyed by OA. Scheduling dates the start of an
+   order that waits on an item: the lead time set against the item
+   code is used first; where none is set, the due date of the open
+   purchase order is used (§9.1.5). Read from SAP B1 (§7.1.4, §7.1.8). */
+const BOUGHTOUT = {
+  "19962": [
+    { item: "Motor 15 kW", scope: "Nadi (NM)", supplier: "Crompton Greaves", leadDays: null, poDue: "25-08-2026", received: null },
+    { item: "Bearing set",  scope: "Nadi (NM)", supplier: "SKF India",       leadDays: 21,   poDue: "20-07-2026", received: "19-07-2026" },
+  ],
+  "20422": [
+    { item: "Motor 7.5 kW", scope: "Customer (CM)", supplier: "Customer scope", leadDays: null, poDue: "26-08-2026", received: null },
+  ],
+  "20790": [
+    { item: "Plate IS 2062 Gr.B", scope: "Nadi (NM)", supplier: "JSW Steel", leadDays: 21, poDue: "15-07-2026", received: "14-07-2026" },
+    { item: "Motor 160 kW",       scope: "Nadi (NM)", supplier: "ABB",       leadDays: 90, poDue: "10-10-2026", received: null },
+  ],
+  "19449": [
+    { item: "Oil level indicator (Dodge)", scope: "Nadi (NM)", supplier: "Dodge / local", leadDays: null, poDue: "26-08-2026", received: null },
+  ],
+  "15288": [
+    { item: "Motors (7 off)", scope: "Nadi (NM)", supplier: "—", leadDays: 60, poDue: "15-06-2026", received: "15-06-2026 (6 of 7)" },
+  ],
+};
+
+/* How an MO's status renders. Reuses STATE_MAP CSS classes.
+   Lifecycle: unscheduled → scheduled → started → stopped (closed). */
+const MO_STATE = {
+  unscheduled: { cls: "watch",    glyph: "○", label: "Unscheduled" },
+  scheduled:   { cls: "on-track", glyph: "◷", label: "Scheduled" },
+  started:     { cls: "watch",    glyph: "▶", label: "Started" },
+  stopped:     { cls: "on-track", glyph: "■", label: "Stopped (closed)" },
+};
+
+/* How a closure posts back to SAP B1 on STOP (§11, §16.1). The
+   message is numbered and idempotent; "pending" means STOP is done
+   but the closure has not yet posted (retried, surfaced on Today). */
+const CLOSURE_STATE = {
+  "false":   { cls: "watch",    glyph: "—", label: "Open" },
+  pending:   { cls: "warn",     glyph: "◴", label: "Closure not posted" },
+  "true":    { cls: "on-track", glyph: "✓", label: "Closed in SAP" },
+};
+
+/* Manufacturing orders, keyed by OA. Each MO sits under a sales-order
+   line (soLine), carries a route of operations on work centres (wc +
+   hrs + per-op state), scheduled start/end from the firmed schedule,
+   a freeze flag, START/STOP, stoppages/rejections and the closure
+   state. Route op state: done | wip | waiting | queued | hold-waiting
+   | not-started. Service / spare / cancelled lines carry no MO — they
+   are not manufactured (absent key). */
+const MOS = {
+  "19962": [
+    { mo: "MO-19962-1", soLine: "019962-1-1", item: "NAF/1050/255/6", kind: "fg", qty: 1, needDate: "30-07-2026",
+      direction: "backward", schedStart: "02-07-2026", schedEnd: "28-07-2026", frozen: true,
+      status: "started", startAt: "02-07-26 08:10", stopAt: null, waitingFor: "material:Motor 15 kW", closurePosted: false,
+      route: [
+        { op: "Impeller fab & balancing", wc: "BAL-1",   hrs: 12, s: "done" },
+        { op: "Casing fit-up & welding",  wc: "FITUP-1", hrs: 14, s: "done" },
+        { op: "Final assembly",           wc: "ASM-1",   hrs: 10, s: "waiting", note: "Motor not received" },
+        { op: "Testing",                  wc: "TEST-1",  hrs: 4,  s: "queued" },
+      ], stoppages: [], rejections: [] },
+    { mo: "MO-19962-2", soLine: "019962-2-1", item: "NAF-900-350-09", kind: "fg", qty: 1, needDate: "30-07-2026",
+      direction: "backward", schedStart: "04-07-2026", schedEnd: "28-07-2026", frozen: true,
+      status: "started", startAt: "04-07-26 08:20", stopAt: null, waitingFor: "material:Motor 15 kW", closurePosted: false,
+      route: [
+        { op: "Impeller fab & balancing", wc: "BAL-1",   hrs: 10, s: "done" },
+        { op: "Casing fit-up & welding",  wc: "FITUP-1", hrs: 12, s: "done" },
+        { op: "Final assembly",           wc: "ASM-2",   hrs: 9,  s: "waiting", note: "Motor not received" },
+        { op: "Testing",                  wc: "TEST-1",  hrs: 4,  s: "queued" },
+      ], stoppages: [], rejections: [] },
+    { mo: "MO-19962-3", soLine: "019962-3-1", item: "NAF/630/150/5/21", kind: "fg", qty: 1, needDate: "30-07-2026",
+      direction: "backward", schedStart: "06-07-2026", schedEnd: "28-07-2026", frozen: true,
+      status: "started", startAt: "06-07-26 08:00", stopAt: null, waitingFor: "material:Motor 15 kW", closurePosted: false,
+      route: [
+        { op: "Hub machining",           wc: "VTL-1",   hrs: 6,  s: "done" },
+        { op: "Impeller balancing",      wc: "BAL-1",   hrs: 8,  s: "done" },
+        { op: "Casing fit-up & welding", wc: "FITUP-1", hrs: 12, s: "done" },
+        { op: "Final assembly",          wc: "ASM-2",   hrs: 8,  s: "waiting", note: "Waiting 15 kW motor" },
+        { op: "Testing",                 wc: "TEST-1",  hrs: 4,  s: "queued" },
+        { op: "Paint & pack",            wc: "PACK-1",  hrs: 4,  s: "queued" },
+      ], stoppages: [], rejections: [] },
+    { mo: "MO-19962-6", soLine: "019962-6-1", item: "NAF/560/150/5", kind: "fg", qty: 1, needDate: "30-07-2026",
+      direction: "backward", schedStart: "10-07-2026", schedEnd: "30-07-2026", frozen: true,
+      status: "started", startAt: "10-07-26 09:00", stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+        { op: "Parts machining", wc: "HMC-1",   hrs: 6, s: "done" },
+        { op: "Casing fit-up",   wc: "FITUP-1", hrs: 8, s: "wip" },
+        { op: "Final assembly",  wc: "ASM-1",   hrs: 6, s: "queued" },
+      ], stoppages: [], rejections: [] },
+    { mo: "MO-19962-20", soLine: "019962-20-1", item: "NAF/315/150/5/10", kind: "fg", qty: 1, needDate: "30-07-2026",
+      direction: "backward", schedStart: "12-07-2026", schedEnd: "30-07-2026", frozen: true,
+      status: "started", startAt: "12-07-26 09:00", stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+        { op: "Parts machining", wc: "HMC-1",   hrs: 5, s: "done" },
+        { op: "Casing fit-up",   wc: "FITUP-1", hrs: 6, s: "wip" },
+        { op: "Final assembly",  wc: "ASM-2",   hrs: 5, s: "queued" },
+      ], stoppages: [], rejections: [] },
+  ],
+  "18616": [
+    { mo: "MO-18616-1", soLine: "018616-1-1", item: "HP-900-WP", kind: "fg", qty: 1, needDate: "24-08-2026",
+      direction: "backward", schedStart: "05-08-2026", schedEnd: "22-08-2026", frozen: true,
+      status: "started", startAt: "05-08-26 08:00", stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+        { op: "Impeller machining & balancing", wc: "BAL-1",   hrs: 10, s: "done" },
+        { op: "Casing fit-up & welding",        wc: "FITUP-1", hrs: 12, s: "done" },
+        { op: "Final assembly",                 wc: "ASM-1",   hrs: 8,  s: "done" },
+        { op: "Leak & performance test",        wc: "TEST-1",  hrs: 6,  s: "wip", note: "Third leak — rework" },
+      ],
+      stoppages: [ { reason: "Repeat seal leak — line held", mins: 480, when: "28-08-26 16:40" } ],
+      rejections: [ { qty: 1, reason: "Mechanical seal — repeat leak, scrapped", when: "28-08-26" } ] },
+  ],
+  "20422": [
+    { mo: "MO-20422-2", soLine: "020422-2-1", item: "LVSC-900", kind: "fg", qty: 1, needDate: "20-08-2026",
+      direction: "backward", schedStart: "05-08-2026", schedEnd: "24-08-2026", frozen: true,
+      status: "started", startAt: "05-08-26 08:30", stopAt: null, waitingFor: "material:Motor 7.5 kW (customer)", closurePosted: false,
+      route: [
+        { op: "Impeller balancing",   wc: "BAL-1",   hrs: 6, s: "done" },
+        { op: "Casing fit-up & paint",wc: "PAINT-1", hrs: 8, s: "done" },
+        { op: "Final assembly",       wc: "ASM-1",   hrs: 6, s: "waiting", note: "Customer motor not received" },
+        { op: "Testing",              wc: "TEST-1",  hrs: 3, s: "queued" },
+      ], stoppages: [], rejections: [] },
+  ],
+  "19415": [
+    { mo: "MO-19415-1", soLine: "019415-2-1", item: "Silencer (×8)", kind: "fg", qty: 8, needDate: "20-08-2026",
+      direction: "backward", schedStart: "20-07-2026", schedEnd: "25-08-2026", frozen: true,
+      status: "stopped", startAt: "20-07-26 08:00", stopAt: "24-08-26 16:00", waitingFor: null, closurePosted: true,
+      route: [
+        { op: "Plate cutting",    wc: "ROLL-1", hrs: 16, s: "done" },
+        { op: "Fabrication",      wc: "WELD-2", hrs: 40, s: "done" },
+        { op: "Paint",            wc: "PAINT-1",hrs: 12, s: "done" },
+        { op: "Packing & crating",wc: "PACK-1", hrs: 8,  s: "done" },
+      ], stoppages: [], rejections: [] },
+  ],
+  "20736": [
+    { mo: "MO-20736-1", soLine: "020736-1-1", item: "RBI490-619", kind: "fg", qty: 1, needDate: "20-08-2026",
+      direction: "backward", schedStart: "04-08-2026", schedEnd: "20-08-2026", frozen: true,
+      status: "stopped", startAt: "04-08-26 08:00", stopAt: "02-09-26 11:30", waitingFor: null, closurePosted: "pending",
+      route: [
+        { op: "Parts machining", wc: "HMC-1",  hrs: 5, s: "done" },
+        { op: "Final assembly",  wc: "ASM-1",  hrs: 5, s: "done" },
+        { op: "Testing",         wc: "TEST-1", hrs: 3, s: "done" },
+        { op: "Packing",         wc: "PACK-1", hrs: 3, s: "done" },
+      ], stoppages: [], rejections: [] },
+  ],
+  "20790": [
+    { mo: "MO-20790-1", soLine: "020790-1-1", item: "WP-1600 engineered fan", kind: "fg", qty: 1, needDate: "20-11-2026",
+      direction: "backward", schedStart: "15-07-2026", schedEnd: "18-11-2026", frozen: true,
+      status: "started", startAt: "15-07-26 08:00", stopAt: null, waitingFor: null, closurePosted: false,
+      route: [
+        { op: "Material cutting",                wc: "ROLL-1",  hrs: 8,  s: "done" },
+        { op: "Flange machining",                wc: "HMC-1",   hrs: 16, s: "done" },
+        { op: "Casing rolling & long-seam weld", wc: "WELD-1",  hrs: 40, s: "done" },
+        { op: "Radiography test",                wc: "TEST-1",  hrs: 6,  s: "hold-waiting", hold: true, note: "Contractual hold — customer inspector 12-09" },
+        { op: "Galvanising",                     wc: "SC-GALV", hrs: 0,  subcontract: true, leadDays: 7, s: "queued" },
+        { op: "Casing fit-up & welding",         wc: "FITUP-1", hrs: 24, s: "queued" },
+        { op: "Dye penetrant test",              wc: "TEST-1",  hrs: 4,  hold: true, s: "queued" },
+        { op: "Final assembly",                  wc: "ASM-1",   hrs: 20, s: "queued", note: "Starts on 160 kW motor receipt (due 10-10)" },
+        { op: "Testing & balancing",             wc: "BAL-1",   hrs: 12, s: "queued" },
+        { op: "Paint & pack",                    wc: "PACK-1",  hrs: 8,  s: "queued" },
+      ], stoppages: [], rejections: [] },
+  ],
+  "15288": [
+    { mo: "MO-15288-1", soLine: "015288-1-1", item: "NAF/1120-35012 (E-Block ×7)", kind: "fg", qty: 7, needDate: "22-08-2026",
+      direction: "backward", schedStart: null, schedEnd: null, frozen: false,
+      status: "unscheduled", startAt: null, stopAt: null, waitingFor: "route", closurePosted: false,
+      route: [
+        { op: "Parts machining",    wc: "HMC-1",  hrs: 30, s: "not-started" },
+        { op: "Casing fabrication", wc: "WELD-2", hrs: 60, s: "not-started" },
+        { op: "Final assembly",     wc: "ASM-1",  hrs: 40, s: "not-started", note: "6 of 7 motors received 15-06; order stalled, route not re-entered" },
+      ], stoppages: [], rejections: [] },
+  ],
+  /* 20262 (service), 19449 (bought-out spare), 18902 (cancelled):
+     no manufacturing order — not scheduled or tracked here. */
+};
+
+/* The agreed SAP Business One interfaces (§16.1). dir: from | to | both.
+   st: ok | retry | fail — the live state of each connection. */
+const INTERFACES = [
+  { n: "Operations, resources & resource groups", dir: "from", st: "ok",    passes: "Operations, work groups and work centres used for scheduling and capacity planning." },
+  { n: "Factory shift hours & calendar",          dir: "both", st: "ok",    passes: "Base shift calendar per work centre; overtime / extra-shift changes made here and sent back." },
+  { n: "Item master & lead times",                dir: "from", st: "ok",    passes: "Item codes, project-specific / stock flag, and the purchase lead time per item code." },
+  { n: "Manufacturing orders vs open sales orders",dir: "from", st: "ok",   passes: "Open MOs read for scheduling and for visibility under each sales-order line." },
+  { n: "Bill of material & route",                dir: "from", st: "ok",    passes: "The BOM and route against each MO, used for scheduling." },
+  { n: "Inventory on hand",                       dir: "from", st: "ok",    passes: "Stock used to check material availability for the start of each order." },
+  { n: "Open purchase orders",                    dir: "from", st: "ok",    passes: "Open orders and the lead time per item code; dates bought-out material." },
+  { n: "Manufacturing order closure",             dir: "to",   st: "retry", passes: "START/STOP closure; SAP closes the MO and issues material by backflush." },
+];
+
+/* One audit trail of every interface message: numbered, idempotent,
+   retried on failure, searchable by document / order / user / time
+   (§16.1, §7.2). st: posted | retry | fail. */
+const AUDIT = [
+  { id: "MSG-20481", dir: "to",   doc: "MO closure",           order: "20736", ref: "MO-20736-1", st: "retry",  tries: 2, when: "02-09-26 11:31", note: "Closure not yet acknowledged by SAP B1 — retrying" },
+  { id: "MSG-20480", dir: "to",   doc: "MO closure",           order: "19415", ref: "MO-19415-1", st: "posted", tries: 1, when: "24-08-26 16:02", note: "Manufacturing order closed; material issued by backflush" },
+  { id: "MSG-20479", dir: "both", doc: "Calendar change",      order: "—",     ref: "WELD-1",     st: "posted", tries: 1, when: "08-09-26 09:05", note: "Extra shift 08–13 Sep sent back to SAP B1" },
+  { id: "MSG-20478", dir: "from", doc: "BOM & route",          order: "20790", ref: "MO-20790-1", st: "posted", tries: 1, when: "08-09-26 06:00", note: "Nightly read — routes refreshed" },
+  { id: "MSG-20477", dir: "from", doc: "Open purchase orders", order: "19962", ref: "Motor 15 kW",st: "posted", tries: 1, when: "08-09-26 06:00", note: "Still open, due 25-08 — overdue" },
+];
+
+/* ============================================================
+   V6 completeness — everything else the Functional Flow names
+   ============================================================ */
+
+/* Notifications (§15). NOTIF_RULES = the configured triggers per role;
+   NOTIFICATIONS = the live instances, filtered by role. Thresholds that
+   fire them are set by Nadi Airtechnics (§15, §17.15). */
+const NOTIF_RULES = {
+  planning:   ["Work centre overloaded", "Schedule slipping against the committed date", "Closure delayed", "Bought-out item or subcontract part late", "SAP Business One data not current"],
+  supervisor: ["Manufacturing order scheduled or re-scheduled for the section", "Start or stop overdue against the schedule", "Downtime beyond the threshold"],
+  projects:   ["Delivery date at risk", "Order put on hold", "Revised delivery date recorded"],
+  management: ["Orders behind the schedule", "Delivery date at risk", "Overloaded work centres", "Interface failure that does not clear"],
+  admin:      ["Interface failure that does not clear", "SAP Business One data not current"],
+};
+const NOTIFICATIONS = [
+  { id: "N1", roles: ["planning", "management"], level: "risk", title: "Work centre overloaded — Casing fit-up", sub: "FITUP-1 at 183% this week; 5 jobs share the 30-07 need date.", when: "08-09 · 08:05", oa: null },
+  { id: "N2", roles: ["planning", "projects", "management"], level: "risk", title: "Schedule slipping against the committed date", sub: "OA 19962 — 15 kW motor 14 days overdue; committed date moved to 08-09.", when: "08-09 · 09:20", oa: "19962" },
+  { id: "N3", roles: ["planning", "management"], level: "warn", title: "Closure delayed", sub: "OA 20736 stopped 02-09 but the closure has not posted to SAP B1.", when: "02-09 · 11:31", oa: "20736" },
+  { id: "N4", roles: ["planning"], level: "warn", title: "Bought-out part late", sub: "OA 20422 — customer motor 13 days past the open-PO due date.", when: "08-09 · 09:00", oa: "20422" },
+  { id: "N5", roles: ["supervisor"], level: "warn", title: "Stop overdue against the schedule", sub: "MO-19962-3 should have stopped by 28-07; still running (held on motor).", when: "08-09 · 07:30", oa: "19962" },
+  { id: "N6", roles: ["supervisor"], level: "info", title: "Manufacturing order re-scheduled for your section", sub: "MO-20790-1 fit-up moved after the 12-09 radiography hold.", when: "06-09 · 16:10", oa: "20790" },
+  { id: "N7", roles: ["projects"], level: "warn", title: "Order put on hold", sub: "OA 15288 marked on hold — awaiting a commercial decision.", when: "01-09 · 10:00", oa: "15288" },
+  { id: "N8", roles: ["projects", "planning"], level: "info", title: "Revised delivery date recorded", sub: "OA 18616 committed date moved to 07-09 (third rework).", when: "28-08 · 17:30", oa: "18616" },
+  { id: "N9", roles: ["management", "admin"], level: "risk", title: "Interface failure not clearing", sub: "MO closure to SAP B1 has retried twice (MSG-20481).", when: "02-09 · 11:31", oa: "20736" },
+];
+
+/* Thresholds that trigger notifications & exceptions — set by Nadi
+   Airtechnics; some still to be confirmed (§15, §17.15). */
+const THRESHOLDS = [
+  { k: "Work-centre overload", v: "Load > 100% of available hours", src: "Nadi Airtechnics", tbc: false },
+  { k: "Schedule slip", v: "Scheduled end later than the committed date", src: "Nadi Airtechnics", tbc: false },
+  { k: "Closure overdue", v: "No STOP within 1 day of the scheduled end", src: "Nadi Airtechnics", tbc: true },
+  { k: "Bought-out late", v: "Past the item lead time / open-PO due date", src: "Nadi Airtechnics", tbc: false },
+  { k: "Machine downtime", v: "Downtime beyond threshold hours/day", src: "Nadi Airtechnics", tbc: true },
+  { k: "SAP data not current", v: "Last successful read older than 1 day", src: "Nadi Airtechnics", tbc: true },
+];
+
+/* Users & roles (§6). Counts are tentative and subject to change. */
+const USERS = [
+  { name: "A. Nair", role: "planning", active: true },
+  { name: "V. Kamat", role: "planning", active: true },
+  { name: "D. Shirke", role: "supervisor", active: true },
+  { name: "P. Jadhav", role: "supervisor", active: true },
+  { name: "R. Mehta", role: "projects", active: true },
+  { name: "P. Joshi", role: "management", active: true },
+  { name: "S. Rao", role: "admin", active: true },
+];
+const USER_COUNTS = [
+  { role: "Planning", planned: "5", note: "tentative" },
+  { role: "Production supervisor", planned: "10–12", note: "tentative" },
+  { role: "Management & dashboard viewers", planned: "≥10", note: "tentative" },
+  { role: "Projects", planned: "as required", note: "" },
+  { role: "System administrator", planned: "1+", note: "" },
+];
+
+/* Who owns which record — the binding SAP-vs-platform position (§5.3). */
+const OWNERSHIP = [
+  { rec: "Operations, resources, resource groups & shift calendar", sys: "SAP Business One", note: "Read; overtime / extra-shift changes made in the platform and sent back" },
+  { rec: "Bill of material & route per manufacturing order", sys: "SAP Business One", note: "Read for scheduling; Planning updates on change, planner re-schedules" },
+  { rec: "Inventory on hand & open purchase orders", sys: "SAP Business One", note: "Read to check material availability" },
+  { rec: "Schedule, frozen schedule & load vs capacity", sys: "Platform", note: "Calculated and held here" },
+  { rec: "Item master & lead times", sys: "SAP Business One", note: "Project-specific / stock flag and purchase lead time" },
+  { rec: "Manufacturing order", sys: "SAP Business One", note: "Read; closure sent back on STOP" },
+  { rec: "START, STOP, line stoppages & rejections", sys: "Platform", note: "Captured against the MO by the supervisor" },
+  { rec: "Stock, stock value & ledgers", sys: "SAP Business One", note: "System of record for everything carrying a value" },
+];
+
+/* Points to confirm (§17). */
+const TOCONFIRM = [
+  { g: "Scheduling & capacity", q: "Who at Nadi Airtechnics owns the schedule and approves this flow?" },
+  { g: "Scheduling & capacity", q: "Which roles may firm a schedule and which may unfreeze it?" },
+  { g: "Scheduling & capacity", q: "Forward or backward scheduling: per order, per work-centre group, or one factory rule?" },
+  { g: "Scheduling & capacity", q: "Where is a subcontract process lead time held, and who keeps it current?" },
+  { g: "Scheduling & capacity", q: "How many work centres, groups and open MOs today, and expected growth?" },
+  { g: "Scheduling & capacity", q: "Where are planned maintenance and downtime held, and how do they reduce capacity?" },
+  { g: "Shop floor & dashboards", q: "Where are line stoppages and rejections recorded today, and by whom?" },
+  { g: "Shop floor & dashboards", q: "Does each planner see all orders, or only their own section?" },
+  { g: "Shop floor & dashboards", q: "Who sees which dashboard, and how often should they refresh?" },
+  { g: "Shop floor & dashboards", q: "Which reports export to Excel, and in what layout?" },
+  { g: "Shop floor & dashboards", q: "Is mobile access wanted for Planning and the production supervisors?" },
+  { g: "Shop floor & dashboards", q: "Full meaning of the status codes RE, FQC, PD, FCP, ASS, ASS/B, ASS/CM, B, CI, DI, FAB, FCP/CM, PRE-MAN, TE?" },
+  { g: "Systems & data", q: "Which SAP B1 version and database, and how should the closure be sent back?" },
+  { g: "Systems & data", q: "What are the shop-floor sections, stations, shifts and network coverage?" },
+  { g: "Process details", q: "What thresholds trigger notifications and exceptions?" },
+  { g: "Baselines", q: "What is delivery performance against committed dates today?" },
+];
+
+/* Mobile access (§16.2) — whether it is wanted is to be confirmed. */
+const MOBILE = [
+  { role: "Planning", items: "See order & production progress and the schedule; see overloaded work centres; act on exceptions." },
+  { role: "Production supervisor", items: "Open the sales-order line and its MOs; START / STOP (closure to SAP B1); record stoppages & rejections." },
+  { role: "Management", items: "Dashboards, exception feed, order status and delivery risk." },
+];
+
+/* Revised-delivery-date history (§13): original committed date + each
+   revision, with the reason and the author kept. Keyed by OA. */
+const REVISIONS = {
+  "19962": [
+    { date: "25-08-2026", kind: "Committed", by: "Planning — A. Nair", reason: "Committed date from the firmed schedule" },
+    { date: "08-09-2026", kind: "Revised",   by: "Planning — A. Nair", reason: "15 kW motor not received — two weeks lost on Crompton" },
+  ],
+  "18616": [
+    { date: "26-08-2026", kind: "Committed", by: "Planning — A. Nair", reason: "Committed date from the firmed schedule" },
+    { date: "02-09-2026", kind: "Revised",   by: "Projects — R. Mehta", reason: "First leak at customer inspection; reseal" },
+    { date: "07-09-2026", kind: "Revised",   by: "Projects — R. Mehta", reason: "Third leak after reassembly — needs a decision, not another rebuild" },
+  ],
+  "20422": [
+    { date: "26-08-2026", kind: "Committed", by: "Planning — A. Nair", reason: "Committed date from the firmed schedule" },
+    { date: "08-09-2026", kind: "Revised",   by: "Projects — R. Mehta", reason: "Customer-scope motor not received — delay recorded as the customer's" },
+  ],
+  "15288": [
+    { date: "20-08-2026", kind: "Committed", by: "Planning — A. Nair", reason: "Committed date from the firmed schedule" },
+    { date: "02-09-2026", kind: "Revised",   by: "Management — P. Joshi", reason: "Order stalled; held pending a commercial decision" },
+  ],
+};
+
+/* Planned maintenance & downtime that reduce a work centre's available
+   hours (§10.1.4). kind: maintenance | downtime (downtime also feeds OEE). */
+const MAINTENANCE = [
+  { wc: "HMC-1",  kind: "maintenance", from: "10-09-2026", to: "10-09-2026", hrsPerDay: 2, note: "Preventive — spindle service" },
+  { wc: "ROLL-1", kind: "downtime",    from: "08-09-2026", to: "09-09-2026", hrsPerDay: 8, note: "Breakdown — hydraulic repair (logged for OEE)" },
+];
+
+/* Exception tables, per area, from the role flows (§9, §10, §11). Shown
+   as the "handled here" reference beside each pillar. */
+const EXCEPTIONS = {
+  schedule: [
+    { s: "Bill of material not released or route not entered", h: "Order left unscheduled, listed as waiting", to: "Planning" },
+    { s: "Calculated end date misses the delivery requirement", h: "Re-schedule to another WC / time slot, or Projects reviews the committed date", to: "Planning, Projects" },
+    { s: "Bought-out item late against the open purchase order", h: "Start follows receipt; the delay shows against the schedule", to: "Planning" },
+    { s: "No shift calendar linked to a work centre", h: "Work centre cannot be scheduled; listed for Planning to correct", to: "Planning" },
+    { s: "Equal need-date jobs need the same work centre", h: "Platform flags the clash; the planner sequences it", to: "Planning" },
+    { s: "BOM or route changes while the MO is in progress", h: "Planning updates the MO BOM/route; the planner re-schedules", to: "Planning" },
+    { s: "Subcontract lead time changes or the part is late", h: "The next consuming process moves; the delay shows", to: "Planning" },
+    { s: "SAP Business One data cannot be read", h: "Last read used and flagged not current; re-run on reconnect", to: "Planning, Management" },
+  ],
+  capacity: [
+    { s: "Hours required on a work centre exceed hours available", h: "Work centre highlighted; overtime / extra shift, or re-schedule", to: "Planning" },
+    { s: "Overtime or an additional shift is not agreed", h: "Re-schedule to another WC / time slot, or Projects reviews the committed date", to: "Planning, Projects" },
+    { s: "No shift calendar linked to a work centre", h: "Work centre cannot be loaded; listed for Planning", to: "Planning" },
+  ],
+  shopfloor: [
+    { s: "Closure of the MO or operation not posted in time", h: "Delay shown against the schedule; the frozen schedule is not changed", to: "Production, Planning" },
+    { s: "Closure does not post to SAP Business One", h: "Held and re-sent; the MO stays open in SAP until it posts", to: "Production, Management" },
+    { s: "A closed MO needs correction", h: "Not reopened here; the correction is made in SAP Business One", to: "Production, Planning" },
+  ],
+};
+
+/* BOM/route changes in progress — Planning updates, planner re-schedules (§9.1.8). */
+const BOM_CHANGES = [
+  { oa: "20790", mo: "MO-20790-1", what: "Route change — dye-penetrant test added after fit-up", by: "Planning — A. Nair", when: "06-09-2026" },
+];
+
+/* The order process at a glance — the five stages the platform follows (§8). */
+const ORDER_STAGES = [
+  { n: "Manufacturing scheduling", what: "All open MOs scheduled on finite capacity from SAP B1, then firmed and frozen.", who: "Planning" },
+  { n: "Capacity planning", what: "Load set against available capacity by day, week and month; overloaded centres highlighted.", who: "Planning" },
+  { n: "Shop-floor tracking", what: "MOs shown under each sales-order line; supervisors START/STOP; closure goes to SAP B1.", who: "Production, SAP B1" },
+  { n: "Committed date & order visibility", what: "Planning commits the delivery date; Projects records holds, comments and revised dates.", who: "Planning, Projects" },
+  { n: "Dashboards", what: "On-time delivery, job status, machine utilisation, OEE and capacity against load.", who: "Management, Planning, Projects" },
+];
+
+/* How the platform is put together — the six layers (§5.2). */
+const LAYERS = [
+  { n: "Scheduling", what: "Schedules open MOs on finite capacity; load vs resources; overloaded centres; holds the frozen schedule; overtime & extra shifts." },
+  { n: "Integration", what: "Connects SAP B1 and the platform. Every message held, numbered, retried and written to one audit trail." },
+  { n: "Master data", what: "Links and validation rules so incomplete or duplicate order / material / production data does not enter the process." },
+  { n: "Process", what: "Runs scheduling, capacity and START/STOP: planning actions, MO status, exceptions and holds." },
+  { n: "Reporting", what: "Keeps data ready for schedule, capacity, delivery performance, utilisation, OEE and job status." },
+  { n: "Screens", what: "Planning, Production, Projects and Management screens, with mobile access where wanted." },
+];
+
+/* Assumptions to confirm before development (§2). */
+const ASSUMPTIONS = [
+  "Work groups, work centres and the shift calendar are set up in SAP B1 and linked to each other.",
+  "The BOM is released by Engineering and the route entered by Planning in SAP B1 before scheduling.",
+  "Sales orders are booked in SAP B1 on PO receipt and released for manufacturing once the GAD is approved and points cleared.",
+  "The platform schedules on finite capacity using SAP B1 resources & calendars; one job per work centre; set-up time in the route hours.",
+  "For a purchased item the item-code lead time is used first; where none is set, the open-PO due date.",
+  "Shop-floor entries are made at supervisor level; staff below update the supervisor and do not use the platform.",
+  "No data is taken from or uploaded to Excel; Excel is used only as an export format.",
+  "SAP B1 goes live for the full order-to-cash cycle on 1 April 2027.",
+  "Overtime and extra-shift calendar changes are made in the platform and sent back to SAP B1.",
+  "START and STOP are at MO level; a closed MO is not reopened here; corrections are made in SAP B1.",
+  "Subcontracted jobs are part of the schedule.",
+  "Jobs with the same need date carry equal priority; the platform flags the clash and the planner sequences (proposed).",
+  "Line stoppages and rejections count in machine utilisation and OEE; their source is to be confirmed.",
+  "Use is planned for 5 planners, 10–12 supervisors and ≥10 dashboard viewers (tentative).",
+  "The Pending Order Excel is the Projects department's property and stays in use until its users accept the platform.",
+  "SAP B1 remains the system of record for all masters and all valued transactions.",
+  "The interfaces required from SAP B1 are made available and agreed before development.",
+  "Production information required for manufacturing is available in SAP B1 or via the agreed process.",
+  "A single owner is named inside Nadi Airtechnics with authority across the departments.",
+  "Planners and supervisors schedule, start and stop MOs as described; otherwise the dashboards are incomplete.",
+  "The shop floor uses shared devices with fast switching between users.",
+];
+
+/* The five roles the Functional Flow defines (§6). Sales, design,
+   purchase, stores, quality, service and dispatch are out of scope —
+   their data lives in SAP B1 and the other systems (§3). */
 const ROLES = {
-  sales:      { label: "Sales", person: "N. Iyer", nav: ["today", "orders", "reports"] },
-  projects:   { label: "Projects", person: "R. Mehta", nav: ["today", "orders", "planning", "revenue", "reports"] },
-  planning:   { label: "Planning", person: "A. Nair", nav: ["today", "orders", "planning", "supply", "revenue", "reports"] },
-  design:     { label: "Design", person: "V. Rane", nav: ["today", "orders"] },
-  purchase:   { label: "Purchase & Stores", person: "S. Kulkarni", nav: ["today", "orders", "supply"] },
-  stores:     { label: "Stores", person: "M. Pawar", nav: ["today", "orders", "supply"] },
-  supervisor: { label: "Production supervisor", person: "D. Shirke", nav: ["today", "orders", "production"] },
-  operator:   { label: "Operator", person: "P. Jadhav", nav: ["myjobs"] },
-  quality:    { label: "Quality", person: "S. Deshpande", nav: ["today", "orders", "quality"] },
-  dispatch:   { label: "Dispatch", person: "K. Salvi", nav: ["today", "orders", "dispatch"] },
-  management: { label: "Management", person: "P. Joshi", nav: ["today", "orders", "revenue", "reports"] },
+  planning:   { label: "Planning", person: "A. Nair", nav: ["today", "schedule", "capacity", "stands", "dashboards", "notifications", "orders"] },
+  supervisor: { label: "Production supervisor", person: "D. Shirke", nav: ["today", "shopfloor", "stands", "notifications", "orders"] },
+  projects:   { label: "Projects", person: "R. Mehta", nav: ["today", "stands", "dashboards", "notifications", "orders"] },
+  management: { label: "Management & dashboards", person: "P. Joshi", nav: ["today", "dashboards", "capacity", "stands", "notifications", "orders"] },
+  admin:      { label: "System administrator", person: "S. Rao", nav: ["integration", "admin", "notifications", "today"] },
 };
 
 const NAV = {
-  today: "Today", orders: "Orders", planning: "Planning", supply: "Supply & shortages",
-  production: "Production", quality: "Quality", dispatch: "Dispatch", revenue: "Revenue plan",
-  reports: "Reports", myjobs: "My jobs",
+  today: "Today", schedule: "Schedule", capacity: "Capacity", shopfloor: "Shop floor",
+  stands: "Where orders stand", dashboards: "Dashboards", notifications: "Notifications",
+  integration: "Integration & audit", admin: "Administration", orders: "Orders",
 };
 
 const ATTENTION = [
@@ -831,7 +1270,6 @@ const ATTENTION = [
   { id: 8, roles: ["supervisor"], level: "warn", oa: "19962", title: "Assembly bay held since 25-08", sub: "JOB-4412 cannot start without the motor. Bay 2 idle.", due: "14 days", action: "Reassign bay" },
 ];
 
-const WEEK_COLS = ["Wk-1", "Wk-2", "Wk-3", "Wk-4", "Back log"];
 
 /* ------------------------------------------------------------
    v3 — per-order discussion: each stakeholder holds a position
@@ -892,38 +1330,8 @@ const DISCUSSIONS = {
   },
 };
 
-/* ------------------------------------------------------------
-   v3 — management revenue plan (from the Pending Order Summery
-   tab). Amounts in ₹ lakhs. Fixes: monthly target vs invoiced
-   vs shortfall, order-in-hand, inventory — none of which the
-   operational views carry. Domestic, YEAR 2026-27.
-   ------------------------------------------------------------ */
-const REVENUE = {
-  reportDate: "05-09-2026",
-  orderInHand: 3466,           // ₹ lakhs, ~₹34.66 cr in hand
-  billedNotMoved: 1675000,     // ₹ (one order, 8 units)
-  months: [
-    { m: "May-26", target: 583, invoiced: 618, actual: true },
-    { m: "Jun-26", target: 583, invoiced: 438, actual: true },
-    { m: "Jul-26", target: 642, invoiced: 534, actual: true },
-    { m: "Aug-26", target: 700, invoiced: 631, actual: true },
-    { m: "Sep-26", target: 817, invoiced: 172, actual: false }, // month in progress
-    { m: "Oct-26", target: 875, invoiced: 0, actual: false },
-    { m: "Nov-26", target: 817, invoiced: 0, actual: false },
-    { m: "Dec-26", target: 875, invoiced: 0, actual: false },
-  ],
-  inventory: [
-    { k: "Finished goods (FG)", v: "₹1.30 cr" },
-    { k: "Semi-finished (SFG)", v: "₹6.21 cr" },
-    { k: "Work in progress (WIP)", v: "₹1.58 cr" },
-  ],
-  entities: [
-    { k: "Domestic", v: "₹12.44 cr" },
-    { k: "Systemair (export)", v: "₹34.15 cr" },
-    { k: "Alstom", v: "₹3.37 cr" },
-    { k: "US LLC / other", v: "₹0.68 cr" },
-  ],
-};
+/* v3 revenue plan removed — the platform holds no money figures;
+   everything that carries a value stays in SAP Business One (§5.3). */
 
 /* ------------------------------------------------------------
    Shared bits
@@ -1000,52 +1408,66 @@ function initials(name) {
   return (name || "?").split(" ").map((p) => p[0]).join("").slice(0, 2);
 }
 
-function StancePill({ s }) {
-  const m = STANCE_MAP[s] || STANCE_MAP.awaiting;
-  return <span className={`stance ${m.cls}`}><span className="glyph" aria-hidden="true">{m.glyph}</span>{m.label}</span>;
-}
+/* Display labels for departments that comment historically but are not
+   platform roles in the V6 scope (their work lives in SAP B1 / others). */
+const HIST_ROLE = { sales: "Sales", design: "Design", purchase: "Purchase", stores: "Stores", quality: "Quality", dispatch: "Dispatch", operator: "Operator", service: "Service" };
+function roleLabel(r) { return (ROLES[r] && ROLES[r].label) || HIST_ROLE[r] || r; }
+function roleAvatar(r) { return ROLES[r] ? initials(ROLES[r].person) : roleLabel(r).slice(0, 2).toUpperCase(); }
 
+/* Order rail — the Projects model from the Functional Flow (§13):
+   holds, the committed-vs-promised dates, and threaded comments.
+   No silent handoffs; everything stays on the order, not a spreadsheet. */
 function Discussion({ order, role, disc, onPost }) {
   const [text, setText] = useState("");
-  const [stance, setStance] = useState(null);
-  const stances = disc?.stances || {};
   const comments = disc?.comments || [];
-  const tally = { yes: 0, no: 0, thinking: 0, awaiting: 0 };
-  STAKEHOLDERS.forEach((r) => { tally[stances[r] || "awaiting"]++; });
-  const canStance = STAKEHOLDERS.includes(role);
+  const moved = order.revised && order.revised !== order.promise && order.revised !== "—";
 
   const submit = () => {
-    if (!text.trim() && !(canStance && stance)) return;
-    onPost(order.oa, { role, stance: canStance ? stance : null, text: text.trim(), when: "Just now" });
-    setText(""); setStance(null);
+    if (!text.trim()) return;
+    onPost(order.oa, { role, text: text.trim(), when: "Just now" });
+    setText("");
   };
 
   return (
     <>
       <div className="rail-card">
         <div className="rail-head">
-          <span className="rail-title">Stakeholder positions</span>
-          <span className="tiny muted">Formal response</span>
+          <span className="rail-title">Holds &amp; dates</span>
+          <span className="tiny muted">Projects</span>
         </div>
-        <div className="tally">
-          <span className="tally-b yes">{tally.yes} Yes</span>
-          <span className="tally-b no">{tally.no} No</span>
-          <span className="tally-b thinking">{tally.thinking} Thinking</span>
-          <span className="tally-b">{tally.awaiting} awaiting</span>
-        </div>
-        {STAKEHOLDERS.map((r) => {
-          const cfg = ROLES[r];
-          return (
-            <div className={`pos ${r === role ? "me" : ""}`} key={r}>
-              <span className="avatar">{cfg ? initials(cfg.person) : "?"}</span>
-              <div className="pos-who">
-                <div className="pos-role">{cfg ? cfg.label : r}{r === role && <span className="pos-me-tag"> · you</span>}</div>
-                <div className="pos-name">{cfg ? cfg.person : ""}</div>
-              </div>
-              <StancePill s={stances[r] || "awaiting"} />
+        <div style={{ padding: "6px 14px 12px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
+            <span className="muted tiny">Current state</span><State level={order.state} text={order.stateNote} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
+            <span className="muted tiny">Promised</span><span className="mono tiny">{order.promise}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
+            <span className="muted tiny">Committed</span>
+            <span className="mono tiny" style={{ color: moved ? "var(--warn)" : "inherit" }}>{order.revised}{moved ? " · revised" : ""}</span>
+          </div>
+          {REVISIONS[order.oa] && (
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid var(--line)" }}>
+              <div className="tiny muted" style={{ marginBottom: 4 }}>Delivery-date history (original + revisions kept)</div>
+              {REVISIONS[order.oa].map((rv, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, padding: "3px 0" }}>
+                  <span className="mono tiny" style={{ color: rv.kind === "Revised" ? "var(--warn)" : "inherit", whiteSpace: "nowrap" }}>{rv.date}</span>
+                  <div className="tiny muted" style={{ flex: 1 }}>{rv.kind} · {rv.reason} <span style={{ opacity: 0.8 }}>— {rv.by}</span></div>
+                </div>
+              ))}
             </div>
-          );
-        })}
+          )}
+          {(order.exceptions || []).length === 0
+            ? <div className="tiny muted" style={{ paddingTop: 6 }}>No holds recorded.</div>
+            : (order.exceptions || []).map((e, i) => (
+              <div className="cmt" key={i} style={{ marginTop: 8 }}>
+                <div className="cmt-body">
+                  <div className="cmt-top"><span className="cmt-role">{e.t}</span><span className="cmt-when">{e.due}</span></div>
+                  <div className="cmt-text">{e.sub} <span className="tiny muted">— {e.owner}</span></div>
+                </div>
+              </div>
+            ))}
+        </div>
       </div>
 
       <div className="rail-card">
@@ -1056,43 +1478,25 @@ function Discussion({ order, role, disc, onPost }) {
         <div className="thread">
           {comments.length === 0
             ? <div className="cmt-empty">No comments yet on this order.</div>
-            : comments.map((c) => {
-              const cfg = ROLES[c.role];
-              return (
-                <div className="cmt" key={c.id}>
-                  <span className="cmt-av">{cfg ? initials(cfg.person) : "?"}</span>
-                  <div className="cmt-body">
-                    <div className="cmt-top">
-                      <span className="cmt-role">{cfg ? cfg.label : c.role}</span>
-                      {c.stance && <StancePill s={c.stance} />}
-                      <span className="cmt-when">{c.when}</span>
-                    </div>
-                    <div className="cmt-text">{c.text}</div>
+            : comments.map((c) => (
+              <div className="cmt" key={c.id}>
+                <span className="cmt-av">{roleAvatar(c.role)}</span>
+                <div className="cmt-body">
+                  <div className="cmt-top">
+                    <span className="cmt-role">{roleLabel(c.role)}</span>
+                    <span className="cmt-when">{c.when}</span>
                   </div>
+                  <div className="cmt-text">{c.text}</div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
         </div>
         <div className="compose">
-          <div className="compose-lbl">Responding as <b>{ROLES[role]?.label || role}</b> · {ROLES[role]?.person}</div>
-          {canStance && (
-            <div className="stance-pick">
-              {["yes", "no", "thinking"].map((v) => (
-                <button key={v} className={`stance-opt ${stance === v ? `pick ${v}` : ""}`}
-                  onClick={() => setStance(stance === v ? null : v)}>
-                  <span className="glyph" aria-hidden="true">{STANCE_MAP[v].glyph}</span>{STANCE_MAP[v].label}
-                </button>
-              ))}
-            </div>
-          )}
-          <textarea
-            placeholder={canStance ? "Add a comment, and set your position above (optional)…" : "Add a comment…"}
-            value={text} onChange={(e) => setText(e.target.value)} />
+          <div className="compose-lbl">Commenting as <b>{roleLabel(role)}</b> · {ROLES[role]?.person}</div>
+          <textarea placeholder="Add a comment…" value={text} onChange={(e) => setText(e.target.value)} />
           <div className="compose-foot">
-            <span className="tiny soft">
-              {canStance ? (stance ? `Position → ${STANCE_MAP[stance].label}` : "No position change") : "Comment only"}
-            </span>
-            <button className="btn sm" onClick={submit} disabled={!text.trim() && !(canStance && stance)}>Post</button>
+            <span className="tiny soft">No silent handoffs — comments stay on the order</span>
+            <button className="btn sm" onClick={submit} disabled={!text.trim()}>Post</button>
           </div>
         </div>
       </div>
@@ -1106,6 +1510,11 @@ function Discussion({ order, role, disc, onPost }) {
 
 function Today({ role, open }) {
   const items = ATTENTION.filter((a) => a.roles.includes(role));
+  const load = wcLoad();
+  const overloaded = WORKCENTRES.filter((w) => !w.subcontract && (load[w.id] || 0) > wcAvailable(w, "week"));
+  const unposted = allMOs().filter((m) => m.closurePosted === "pending");
+  const unscheduled = allMOs().filter((m) => m.status === "unscheduled");
+  const withStoppage = allMOs().filter((m) => (m.stoppages && m.stoppages.length) || (m.rejections && m.rejections.length));
   return (
     <div className="page">
       <div className="page-head">
@@ -1172,9 +1581,33 @@ function Today({ role, open }) {
               </div>
             ))}
           </div>
+          <div className="card">
+            <div className="card-head"><span className="card-title">Operational signals</span><span className="tiny muted">From the schedule, capacity &amp; closures</span></div>
+            <div className="sub">
+              <State level={overloaded.length ? "warn" : "on-track"} text={`${overloaded.length} overloaded`} />
+              <div style={{ flex: 1 }} className="tiny muted">Work centres over capacity this week{overloaded.length ? ": " + overloaded.map((w) => w.id).join(", ") : ""}</div>
+            </div>
+            {unposted.map((m) => (
+              <div className="sub click" key={m.mo} onClick={() => open(m.order.oa)}>
+                <State level="warn" text="Closure not posted" />
+                <div style={{ flex: 1 }} className="tiny muted"><span className="mono">OA {m.order.oa}</span> · {m.mo} stopped, closure retrying to SAP B1</div>
+              </div>
+            ))}
+            {unscheduled.map((m) => (
+              <div className="sub click" key={m.mo} onClick={() => open(m.order.oa)}>
+                <State level="warn" text="Unscheduled" />
+                <div style={{ flex: 1 }} className="tiny muted"><span className="mono">OA {m.order.oa}</span> · waiting for the {m.waitingFor === "route" ? "route" : "bill of material"}</div>
+              </div>
+            ))}
+            {withStoppage.map((m) => (
+              <div className="sub click" key={m.mo + "-stp"} onClick={() => open(m.order.oa)}>
+                <State level="warn" text="Stoppage / rejection" />
+                <div style={{ flex: 1 }} className="tiny muted"><span className="mono">OA {m.order.oa}</span> · {m.mo} logged {m.stoppages.length ? `${m.stoppages.length} stoppage` : ""}{m.stoppages.length && m.rejections.length ? ", " : ""}{m.rejections.length ? `${m.rejections.length} rejection` : ""}</div>
+              </div>
+            ))}
+          </div>
           <div className="note">
-            Everything below sits on the same eight checkpoints, whichever department you belong to.
-            Nothing is tracked in a second list.
+            One connected history per order. The schedule, capacity and shop-floor closure all read the same SAP Business One record — nothing is tracked in a second list.
           </div>
         </div>
       </div>
@@ -1517,258 +1950,683 @@ function Workspace({ order, back, role, disc, onPost }) {
   );
 }
 
-function Planning({ open }) {
+/* ------------------------------------------------------------
+   Shell
+   ------------------------------------------------------------ */
+/* ============================================================
+   V6 pillar views — Schedule (§9), Capacity (§10), Shop floor (§11)
+   ============================================================ */
+const WC = Object.fromEntries(WORKCENTRES.map((w) => [w.id, w]));
+const WG = Object.fromEntries(WORKGROUPS.map((g) => [g.id, g]));
+const WORKDAYS = { day: 1, week: 6, month: 26 };
+
+/* Every MO flattened with its parent order. */
+function allMOs() {
+  const out = [];
+  for (const o of ORDERS) for (const m of (MOS[o.oa] || [])) out.push({ ...m, order: o });
+  return out;
+}
+/* Daily in-house hours of a work centre (subcontract has none). */
+function wcDailyHours(w) {
+  if (w.subcontract) return null;
+  return (w.shiftHrs || 0) * (w.shifts || 1) - (w.downtime || 0);
+}
+/* Planned maintenance / downtime hours that reduce a WC this period (§10.1.4). */
+function wcMaintenance(wcId, period) {
+  return MAINTENANCE.filter((m) => m.wc === wcId).reduce((s, m) => s + (m.hrsPerDay || 0), 0) * WORKDAYS[period];
+}
+/* Available hours for a period: base calendar + overtime / extra shift,
+   less planned maintenance and downtime (§10.1.1, §10.1.4). */
+function wcAvailable(w, period) {
+  const base = (wcDailyHours(w) || 0) * WORKDAYS[period];
+  const ot = CAL_ADJUST.filter((a) => a.wc === w.id).reduce((s, a) => s + (a.addHrsPerDay || 0), 0) * WORKDAYS[period];
+  return Math.max(0, base + ot - wcMaintenance(w.id, period));
+}
+/* Load = sum of route operation hours on each work centre, across every
+   scheduled MO. Subcontract ops are dated by lead time, not WC hours (§10.1.2). */
+function wcLoad() {
+  const load = {};
+  for (const w of WORKCENTRES) load[w.id] = 0;
+  for (const m of allMOs()) {
+    if (m.status === "unscheduled") continue;
+    for (const op of m.route) {
+      if (op.subcontract) continue;
+      load[op.wc] = (load[op.wc] || 0) + (op.hrs || 0);
+    }
+  }
+  return load;
+}
+/* Equal need-date jobs queued on one work centre — the clash the planner
+   sequences (§9.1.3, proposed assumption). */
+function wcClashes() {
+  const seen = {};
+  for (const m of allMOs()) {
+    if (m.status === "unscheduled") continue;
+    const wcs = new Set(m.route.filter((op) => !op.subcontract).map((op) => op.wc));
+    for (const wc of wcs) { const k = wc + "|" + m.needDate; (seen[k] = seen[k] || []).push(m); }
+  }
+  return Object.entries(seen).filter(([, a]) => a.length > 1)
+    .map(([k, a]) => { const [wc, need] = k.split("|"); return { wc, need, mos: a }; });
+}
+/* Material-available date for a bought-out item: lead time first, else open-PO due (§9.1.5). */
+function materialDate(bo) {
+  if (bo.received) return { d: bo.received, basis: "received" };
+  if (bo.leadDays != null) return { d: bo.poDue, basis: bo.leadDays + "-day item lead time" };
+  return { d: bo.poDue, basis: "open-PO due date" };
+}
+function moPill(status) {
+  const m = MO_STATE[status] || MO_STATE.scheduled;
+  return <State level={m.cls} text={m.label} />;
+}
+function routeProgress(route) {
+  const done = route.filter((op) => op.s === "done").length;
+  return `${done}/${route.length} ops`;
+}
+
+/* Exception table for a pillar (§9 / §10 / §11), rendered as reference. */
+function ExceptionsCard({ area, title, cite }) {
+  const rows = EXCEPTIONS[area] || [];
+  return (
+    <div className="card" style={{ marginTop: 16 }}>
+      <div className="card-head"><span className="card-title">{title}</span><span className="tiny muted">{cite}</span></div>
+      <table className="tbl">
+        <thead><tr><th>Situation</th><th>How it is handled</th><th>Referred to</th></tr></thead>
+        <tbody>
+          {rows.map((e, i) => (
+            <tr key={i}><td>{e.s}</td><td className="tiny muted">{e.h}</td><td className="tiny muted">{e.to}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* ---- Schedule (§9) ---- */
+function Schedule({ open, toast }) {
+  const [dir, setDir] = useState("backward");
+  const [frozen, setFrozen] = useState(() =>
+    Object.fromEntries(allMOs().map((m) => [m.mo, m.frozen])));
+  const [published, setPublished] = useState({});
+  const [moved, setMoved] = useState({});
+  const mos = allMOs();
+  const scheduled = mos.filter((m) => m.status !== "unscheduled");
+  const waiting = mos.filter((m) => m.status === "unscheduled" || m.waitingFor === "route" || m.waitingFor === "BOM");
+  const onMaterial = mos.filter((m) => (m.waitingFor || "").startsWith("material:"));
+  const clashes = wcClashes();
+  const frozenCount = Object.values(frozen).filter(Boolean).length;
+
+  const publish = (oa, d) => { setPublished((p) => ({ ...p, [oa]: d })); toast(`Committed date ${d} published to Projects & Management (OA ${oa})`); };
+  const moveMo = (m, wc) => { setMoved((x) => ({ ...x, [m.mo]: wc })); toast(`${m.mo} moved to ${WC[wc] ? WC[wc].name : wc} — schedule recalculated`); };
+
+  const toggleFreeze = (m) => {
+    setFrozen((f) => ({ ...f, [m.mo]: !f[m.mo] }));
+    toast(frozen[m.mo] ? `${m.mo} unfrozen — planner can re-schedule` : `${m.mo} firmed and frozen`);
+  };
+
   return (
     <div className="page">
       <div className="page-head">
         <div>
-          <h1 className="title">Planning</h1>
-          <div className="subtitle">Plan week is a week again. State sits beside it, not inside it.</div>
+          <h1 className="title">Schedule</h1>
+          <div className="subtitle">Every open manufacturing order on finite capacity, from SAP Business One. The planner firms it; then it is frozen.</div>
         </div>
-        <button className="btn">Confirm plan</button>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <span className="tiny muted">Direction</span>
+          <button className={`chip ${dir === "forward" ? "on" : ""}`} onClick={() => setDir("forward")}>Forward from today</button>
+          <button className={`chip ${dir === "backward" ? "on" : ""}`} onClick={() => setDir("backward")}>Backward from need date</button>
+        </div>
       </div>
 
       <div className="kpis" style={{ marginBottom: 18 }}>
-        <div className="kpi"><div className="kpi-k">Orders in plan</div><div className="kpi-v">27</div><div className="kpi-s">Sep-26 loading</div></div>
-        <div className="kpi"><div className="kpi-k">Blocked on supply</div><div className="kpi-v" style={{ color: "var(--risk)" }}>2</div><div className="kpi-s">Both motors</div></div>
-        <div className="kpi"><div className="kpi-k">Weight loaded, Sep-26</div><div className="kpi-v">58,488<span className="tiny muted"> kg</span></div><div className="kpi-s">Summed from confirmed orders</div></div>
-        <div className="kpi"><div className="kpi-k">Hold points this month</div><div className="kpi-v">4</div><div className="kpi-s">3 need the customer on site</div></div>
+        <div className="kpi"><div className="kpi-k">Manufacturing orders scheduled</div><div className="kpi-v">{scheduled.length}</div><div className="kpi-s">of {mos.length} open</div></div>
+        <div className="kpi"><div className="kpi-k">Frozen</div><div className="kpi-v">{frozenCount}</div><div className="kpi-s">changed only by the planner</div></div>
+        <div className="kpi"><div className="kpi-k">Waiting on material</div><div className="kpi-v" style={{ color: "var(--risk)" }}>{onMaterial.length}</div><div className="kpi-s">start follows receipt</div></div>
+        <div className="kpi"><div className="kpi-k">Waiting for BOM / route</div><div className="kpi-v" style={{ color: onMaterial.length ? "var(--warn)" : "inherit" }}>{waiting.length}</div><div className="kpi-s">left unscheduled</div></div>
       </div>
 
-      <h2 className="sec">Plan week</h2>
-      <div className="kb" style={{ marginBottom: 18 }}>
-        {WEEK_COLS.map((w) => {
-          const rows = ORDERS.filter((o) => o.planWeek === w);
-          return (
-            <div className="kb-col" key={w}>
-              <div className="kb-h"><span>{w}</span><span className="nav-count">{rows.length}</span></div>
-              {rows.length === 0
-                ? <div className="kb-empty">Nothing loaded</div>
-                : rows.map((o) => (
-                  <div className="kb-card" key={o.epicor} onClick={() => open(o.oa)}>
-                    <div className="kb-id mono">OA {o.oa}</div>
-                    <div className="kb-sub">{o.customer}</div>
-                    <div style={{ marginTop: 6 }}><State level={o.state} text={o.stateNote} /></div>
-                  </div>
-                ))}
+      {waiting.length > 0 && (
+        <div className="card" style={{ marginBottom: 16, borderColor: "var(--warn-line)" }}>
+          <div className="card-head"><span className="card-title">Waiting for the bill of material or the route</span><span className="tiny muted">Not scheduled until released (§9 exc.1)</span></div>
+          {waiting.map((m) => (
+            <div key={m.mo} className="sub click" onClick={() => open(m.order.oa)}>
+              <State level="warn" text="Unscheduled" />
+              <div style={{ flex: 1 }}><span className="mono">OA {m.order.oa}</span> · {m.item} <span className="tiny muted">— waiting for {m.waitingFor === "route" ? "the route" : m.waitingFor === "BOM" ? "the bill of material" : "release"}</span></div>
+              <span className="mono tiny muted">{m.mo}</span>
             </div>
-          );
-        })}
+          ))}
+        </div>
+      )}
+
+      {clashes.length > 0 && (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="card-head"><span className="card-title">Equal-priority clashes</span><span className="tiny muted">Same need date, same work centre — planner sequences (§9.1.3)</span></div>
+          {clashes.map((c) => (
+            <div key={c.wc + c.need} className="sub">
+              <State level="watch" text="Clash" />
+              <div style={{ flex: 1 }}><b>{WC[c.wc] ? WC[c.wc].name : c.wc}</b> — {c.mos.length} jobs all need <span className="mono">{c.need}</span></div>
+              <button className="btn sm ghost" onClick={() => toast("Planner sequences the clash — equal priority, client has set no rule")}>Sequence</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-head"><span className="card-title">Scheduled manufacturing orders</span><span className="tiny muted">Start on material availability; series / parallel per route &amp; BOM</span></div>
+        <table className="tbl">
+          <thead><tr><th>OA</th><th>Manufacturing order</th><th>Route</th><th>Scheduled</th><th>Need</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            {scheduled.map((m) => (
+              <tr key={m.mo}>
+                <td className="mono link click" onClick={() => open(m.order.oa)}>{m.order.oa}</td>
+                <td><div>{m.item}</div><div className="mono tiny muted">{m.mo} · {m.soLine}</div></td>
+                <td className="tiny muted">{routeProgress(m.route)}{m.route.some((op) => op.subcontract) ? " · incl. subcontract" : ""}{m.route.some((op) => op.hold) ? " · hold point" : ""}{moved[m.mo] ? ` · moved → ${WC[moved[m.mo]] ? WC[moved[m.mo]].name : moved[m.mo]}` : ""}</td>
+                <td className="mono tiny">{m.schedStart || "—"} → {m.schedEnd || "—"}</td>
+                <td className="mono tiny">{m.needDate}</td>
+                <td>{m.waitingFor && m.waitingFor.startsWith("material:")
+                  ? <State level="blocked" text={"Waiting " + m.waitingFor.slice(9)} />
+                  : moPill(m.status)}</td>
+                <td>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "flex-end" }}>
+                    <select className="role-select" style={{ width: "auto", padding: "4px 6px", fontSize: 12 }}
+                      value={moved[m.mo] || ""} onChange={(e) => e.target.value && moveMo(m, e.target.value)} title="Re-schedule to another work centre (§9.1.6)">
+                      <option value="">Move…</option>
+                      {WORKCENTRES.filter((w) => !w.subcontract).map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+                    </select>
+                    <button className={`chip ${frozen[m.mo] ? "on" : ""}`} onClick={() => toggleFreeze(m)}>
+                      {frozen[m.mo] ? "Frozen" : "Freeze"}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-head"><span className="card-title">Committed delivery dates</span><span className="tiny muted">Taken from the firmed schedule; feasibility against the need date (§12.1)</span></div>
+        <table className="tbl">
+          <thead><tr><th>OA</th><th>Need</th><th>Scheduled end</th><th>Feasibility</th><th>Committed</th><th></th></tr></thead>
+          <tbody>
+            {ORDERS.filter((o) => (MOS[o.oa] || []).length).map((o) => {
+              const se = scheduledEndOf(o.oa);
+              const need = ((MOS[o.oa] || [])[0] || {}).needDate || o.need;
+              const feasible = se && need && need !== "—" ? cmpDate(se, need) <= 0 : null;
+              const pub = published[o.oa] || committedOf(o);
+              return (
+                <tr key={o.oa}>
+                  <td className="mono link click" onClick={() => open(o.oa)}>{o.oa}</td>
+                  <td className="mono tiny">{need}</td>
+                  <td className="mono tiny">{se || "—"}</td>
+                  <td>{feasible == null ? <span className="tiny muted">—</span> : feasible ? <State level="on-track" text="Meets need date" /> : <State level="warn" text="Later than need" />}</td>
+                  <td className="mono tiny">{pub}{published[o.oa] ? " · published" : ""}</td>
+                  <td>
+                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                      {feasible === false ? <button className="btn sm ghost" onClick={() => toast(`OA ${o.oa} escalated to Projects & Management — delivery date at risk`)}>Escalate</button> : null}
+                      <button className="btn sm" onClick={() => publish(o.oa, se || committedOf(o))}>Publish</button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {BOM_CHANGES.length > 0 && (
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div className="card-head"><span className="card-title">Changes in progress</span><span className="tiny muted">BOM / route changed — planner re-schedules (§9.1.8)</span></div>
+          {BOM_CHANGES.map((b, i) => (
+            <div key={i} className="sub">
+              <State level="watch" text="Re-schedule" />
+              <div style={{ flex: 1 }}><span className="mono">OA {b.oa}</span> · {b.what}<div className="tiny muted">{b.by} · {b.when}</div></div>
+              <button className="btn sm ghost" onClick={() => toast(`${b.mo} re-scheduled after the route change`)}>Re-schedule</button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="card">
-        <div className="card-head">
-          <span className="card-title">Dates that moved</span>
-          <span className="tiny muted">Committed against promise, with the reason</span>
-        </div>
+        <div className="card-head"><span className="card-title">Bought-out material dating</span><span className="tiny muted">Lead time against the item code first; else the open-PO due date (§9.1.5)</span></div>
         <table className="tbl">
-          <thead><tr><th>OA</th><th>Promise</th><th>Committed</th><th>State</th><th>Reason</th><th>Owner</th></tr></thead>
+          <thead><tr><th>OA</th><th>Item</th><th>Scope</th><th>Basis</th><th>Available from</th></tr></thead>
           <tbody>
-            {ORDERS.filter((o) => o.revised !== o.promise).map((o) => (
-              <tr key={o.epicor} className="click" onClick={() => open(o.oa)}>
-                <td className="mono link">{o.oa}</td>
-                <td className="mono">{o.promise}</td>
-                <td className="mono">{o.revised}</td>
-                <td><State level={o.state} text={o.stateNote} /></td>
-                <td className="tiny muted">{o.exceptions[0] ? o.exceptions[0].t : "—"}</td>
-                <td className="tiny muted">{o.owner}</td>
-              </tr>
-            ))}
+            {ORDERS.flatMap((o) => (BOUGHTOUT[o.oa] || []).map((bo) => {
+              const md = materialDate(bo);
+              const late = !bo.received && bo.poDue && cmpDate(bo.poDue, "08-09-2026") < 0;
+              return (
+                <tr key={o.oa + bo.item} className="click" onClick={() => open(o.oa)}>
+                  <td className="mono link">{o.oa}</td>
+                  <td>{bo.item}</td>
+                  <td className="tiny muted">{bo.scope}</td>
+                  <td className="tiny muted">{md.basis}</td>
+                  <td className="mono tiny" style={{ color: late ? "var(--risk)" : "inherit" }}>{md.d}{late ? " · overdue" : ""}</td>
+                </tr>
+              );
+            }))}
           </tbody>
         </table>
       </div>
+
+      <ExceptionsCard area="schedule" title="Exceptions handled on the schedule" cite="§9" />
     </div>
   );
 }
 
-function Supply({ open }) {
-  const rows = [];
-  ORDERS.forEach((o) => o.supply.forEach((s) => {
-    if (!s.received && !s.scope.includes("Not applicable")) rows.push({ ...s, o });
-  }));
-  rows.sort((a, b) => b.age - a.age);
+/* dd-mm-yyyy compare: <0 if a before b. */
+function cmpDate(a, b) {
+  const p = (s) => { const [d, m, y] = s.split("-").map(Number); return y * 10000 + m * 100 + d; };
+  return p(a) - p(b);
+}
+
+/* ---- Capacity (§10) ---- */
+function Capacity({ toast }) {
+  const [period, setPeriod] = useState("week");
+  const load = wcLoad();
+  const centres = WORKCENTRES.filter((w) => !w.subcontract);
+  const rows = centres.map((w) => {
+    const avail = wcAvailable(w, period);
+    const l = load[w.id] || 0;
+    return { w, avail, load: l, pct: avail ? Math.round((l / avail) * 100) : 0, over: l > avail };
+  });
+  const overloaded = rows.filter((r) => r.over);
+  const totalLoad = rows.reduce((s, r) => s + r.load, 0);
+  const totalAvail = rows.reduce((s, r) => s + r.avail, 0);
 
   return (
     <div className="page">
       <div className="page-head">
         <div>
-          <h1 className="title">Supply and shortages</h1>
-          <div className="subtitle">Every shortage has an owner and an age. Nothing is a note typed into a cell.</div>
+          <h1 className="title">Capacity</h1>
+          <div className="subtitle">The load the schedule creates, set against the hours the work centres have. Overloaded centres are flagged.</div>
+        </div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <span className="tiny muted">Per</span>
+          {["day", "week", "month"].map((p) => (
+            <button key={p} className={`chip ${period === p ? "on" : ""}`} onClick={() => setPeriod(p)}>{p}</button>
+          ))}
         </div>
       </div>
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="card-head"><span className="card-title">Open items, oldest first</span></div>
-        <table className="tbl">
-          <thead><tr><th>OA</th><th>Item</th><th>Scope</th><th>Supplier</th><th>Expected</th><th>Status</th><th /></tr></thead>
-          <tbody>
-            {rows.map((r, i) => (
-              <tr key={i} className="click" onClick={() => open(r.o.oa)}>
-                <td className="mono link">{r.o.oa}</td>
-                <td>{r.item}</td>
-                <td className="tiny muted">{r.scope}</td>
-                <td className="tiny muted">{r.supplier}</td>
-                <td className="mono tiny">{r.expected}</td>
-                <td>{r.age > 0 ? <State level="blocked" text={`Overdue ${r.age} days`} /> : <State level="watch" text="On order" />}</td>
-                <td><button className="btn sm">Chase</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="note">
-        Customer-scope items age separately. OA 20422 has waited 13 days on a motor the customer owes —
-        the record should show whose delay it is when the date is renegotiated.
-      </div>
-    </div>
-  );
-}
 
-function Production({ open }) {
-  const groups = ["In progress", "Ready", "Blocked", "Rework", "Complete"];
-  return (
-    <div className="page">
-      <div className="page-head">
-        <div>
-          <h1 className="title">Production</h1>
-          <div className="subtitle">Status comes from the operator's taps, not from a supervisor typing codes.</div>
-        </div>
+      <div className="kpis" style={{ marginBottom: 18 }}>
+        <div className="kpi"><div className="kpi-k">Overloaded work centres</div><div className="kpi-v" style={{ color: overloaded.length ? "var(--risk)" : "var(--ok)" }}>{overloaded.length}</div><div className="kpi-s">this {period}</div></div>
+        <div className="kpi"><div className="kpi-k">Load</div><div className="kpi-v">{totalLoad}<span className="tiny muted"> h</span></div><div className="kpi-s">route hours scheduled</div></div>
+        <div className="kpi"><div className="kpi-k">Available</div><div className="kpi-v">{totalAvail}<span className="tiny muted"> h</span></div><div className="kpi-s">incl. overtime arranged</div></div>
+        <div className="kpi"><div className="kpi-k">Spare</div><div className="kpi-v" style={{ color: totalAvail - totalLoad < 0 ? "var(--risk)" : "inherit" }}>{totalAvail - totalLoad}<span className="tiny muted"> h</span></div><div className="kpi-s">across the factory</div></div>
       </div>
-      {groups.map((g) => {
-        const rows = JOBS.filter((j) => j.state === g);
-        if (!rows.length) return null;
+
+      {WORKGROUPS.filter((g) => g.id !== "SUB").map((g) => {
+        const grp = rows.filter((r) => r.w.group === g.id);
+        if (!grp.length) return null;
         return (
-          <div className="card" key={g} style={{ marginBottom: 14 }}>
+          <div className="card" key={g.id} style={{ marginBottom: 14 }}>
+            <div className="card-head"><span className="card-title">{g.name}</span><span className="tiny muted">{grp.filter((r) => r.over).length} overloaded</span></div>
+            <table className="tbl">
+              <thead><tr><th>Work centre</th><th>Load</th><th>Available</th><th style={{ width: "32%" }}>Utilisation</th><th></th></tr></thead>
+              <tbody>
+                {grp.map((r) => {
+                  const adj = CAL_ADJUST.find((a) => a.wc === r.w.id);
+                  return (
+                    <tr key={r.w.id}>
+                      <td>{r.w.name}<div className="mono tiny muted">{r.w.id} · {r.w.shifts} shift{r.w.shifts > 1 ? "s" : ""}{adj ? " · +OT" : ""}</div></td>
+                      <td className="mono">{r.load} h</td>
+                      <td className="mono">{r.avail} h</td>
+                      <td>
+                        <div className="bar"><i className={r.over ? "red" : ""} style={{ width: `${Math.min(r.pct, 100)}%` }} /></div>
+                        <div className="tiny muted" style={{ marginTop: 3, color: r.over ? "var(--risk)" : "inherit" }}>{r.pct}%{r.over ? " — overloaded" : ""}</div>
+                      </td>
+                      <td>{r.over
+                        ? <button className="btn sm ghost" onClick={() => toast(`Resolve ${r.w.name}: overtime, an extra shift, or re-schedule the job`)}>Resolve</button>
+                        : <span className="tiny muted">spare {r.avail - r.load} h</span>}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+      })}
+
+      <div className="card">
+        <div className="card-head"><span className="card-title">Overtime &amp; extra shifts</span><span className="tiny muted">Made in the platform, sent back to SAP Business One (§9.1.9)</span></div>
+        {CAL_ADJUST.length === 0 ? <div className="kb-empty">None arranged.</div> : CAL_ADJUST.map((a, i) => (
+          <div key={i} className="sub">
+            <State level="on-track" text={a.kind} />
+            <div style={{ flex: 1 }}><b>{WC[a.wc] ? WC[a.wc].name : a.wc}</b> — +{a.addHrsPerDay} h/day, <span className="mono tiny">{a.from} → {a.to}</span><div className="tiny muted">{a.note} · {a.by}</div></div>
+          </div>
+        ))}
+        <div className="card-pad tiny muted">Overtime adds to the available hours below; planned maintenance and downtime reduce them.</div>
+      </div>
+
+      <div className="card" style={{ marginTop: 14 }}>
+        <div className="card-head"><span className="card-title">Planned maintenance &amp; downtime</span><span className="tiny muted">Reduces available hours; downtime also feeds OEE (§10.1.4)</span></div>
+        {MAINTENANCE.length === 0 ? <div className="kb-empty">None logged.</div> : MAINTENANCE.map((m, i) => (
+          <div key={i} className="sub">
+            <State level={m.kind === "downtime" ? "warn" : "watch"} text={m.kind === "downtime" ? "Downtime" : "Maintenance"} />
+            <div style={{ flex: 1 }}><b>{WC[m.wc] ? WC[m.wc].name : m.wc}</b> — −{m.hrsPerDay} h/day, <span className="mono tiny">{m.from}{m.from !== m.to ? " → " + m.to : ""}</span><div className="tiny muted">{m.note}</div></div>
+          </div>
+        ))}
+        <div className="card-pad tiny muted">Where planned maintenance and downtime are held, and the exact source, is to be confirmed (§10.1.4, §17).</div>
+      </div>
+
+      <ExceptionsCard area="capacity" title="Exceptions handled in capacity planning" cite="§10" />
+    </div>
+  );
+}
+
+/* ---- Shop floor (§11) ---- */
+function ShopFloor({ open, toast }) {
+  const [st, setSt] = useState(() =>
+    Object.fromEntries(allMOs().map((m) => [m.mo, {
+      status: m.status, startAt: m.startAt, stopAt: m.stopAt, closurePosted: m.closurePosted,
+      stoppages: m.stoppages.slice(), rejections: m.rejections.slice(),
+    }])));
+  const [cap, setCap] = useState({ mo: null, type: null, a: "", b: "" });
+  const mos = allMOs().filter((m) => m.status !== "unscheduled");
+  const byOrder = {};
+  for (const m of mos) (byOrder[m.order.oa] = byOrder[m.order.oa] || []).push(m);
+
+  const now = "08-09-26 ";
+  const start = (m) => { setSt((s) => ({ ...s, [m.mo]: { ...s[m.mo], status: "started", startAt: now + "09:00" } })); toast(`${m.mo} started — visible to Planning`); };
+  const stop = (m) => { setSt((s) => ({ ...s, [m.mo]: { ...s[m.mo], status: "stopped", stopAt: now + "17:00", closurePosted: "pending" } })); toast(`${m.mo} stopped — closure sent to SAP Business One`); };
+  const openCap = (mo, type) => setCap({ mo, type, a: "", b: "" });
+  const closeCap = () => setCap({ mo: null, type: null, a: "", b: "" });
+  const addCapture = (m) => {
+    if (!cap.a.trim()) return;
+    if (cap.type === "stoppage") {
+      const entry = { reason: cap.a.trim(), mins: Number(cap.b) || 0, when: now + "—" };
+      setSt((s) => ({ ...s, [m.mo]: { ...s[m.mo], stoppages: [entry, ...s[m.mo].stoppages] } }));
+      toast(`Stoppage recorded on ${m.mo} — held for machine utilisation & OEE`);
+    } else {
+      const entry = { qty: Number(cap.a) || 1, reason: cap.b.trim(), when: now + "—" };
+      setSt((s) => ({ ...s, [m.mo]: { ...s[m.mo], rejections: [entry, ...s[m.mo].rejections] } }));
+      toast(`Rejection recorded on ${m.mo} — held for OEE`);
+    }
+    closeCap();
+  };
+  const inp = { padding: "5px 8px", border: "1px solid var(--line)", borderRadius: 5, font: "inherit", fontSize: 12, background: "var(--white)", color: "var(--ink)", flex: 1 };
+
+  return (
+    <div className="page">
+      <div className="page-head">
+        <div>
+          <h1 className="title">Shop floor</h1>
+          <div className="subtitle">Manufacturing orders under each sales-order line. Start and stop at the order; the closure goes to SAP Business One.</div>
+        </div>
+      </div>
+
+      {Object.entries(byOrder).map(([oa, list]) => {
+        const o = list[0].order;
+        return (
+          <div className="card" key={oa} style={{ marginBottom: 14 }}>
             <div className="card-head">
-              <span className="card-title">{g}</span>
-              <span className="tiny muted">{rows.length} job{rows.length > 1 ? "s" : ""}</span>
+              <span className="card-title click link" onClick={() => open(oa)}>OA {oa} — {o.customer}</span>
+              <span className="tiny muted">{list.length} manufacturing order{list.length > 1 ? "s" : ""}</span>
             </div>
             <table className="tbl">
-              <thead><tr><th>Job</th><th>OA</th><th>Operation</th><th>Section</th><th>Done</th><th>Operator</th><th>Since</th></tr></thead>
+              <thead><tr><th>Manufacturing order</th><th>Scheduled</th><th>Route</th><th>Status</th><th>Closure</th><th>Action</th></tr></thead>
               <tbody>
-                {rows.map((j) => (
-                  <tr key={j.job} className="click" onClick={() => open(j.oa)}>
-                    <td className="mono">{j.job}</td>
-                    <td className="mono link">{j.oa}</td>
-                    <td>{j.op}</td>
-                    <td className="muted tiny">{j.section}</td>
-                    <td className="mono">{j.done} of {j.qty}</td>
-                    <td className="muted tiny">{j.by}</td>
-                    <td className="mono tiny muted">{j.since}</td>
+                {list.map((m) => {
+                  const s = st[m.mo];
+                  const cl = CLOSURE_STATE[String(s.closurePosted)] || CLOSURE_STATE["false"];
+                  const held = (m.waitingFor || "").startsWith("material:");
+                  const capturing = cap.mo === m.mo;
+                  return (
+                    <React.Fragment key={m.mo}>
+                      <tr className={m.route.some((op) => op.hold && op.s !== "done") ? "hold" : ""}>
+                        <td><div>{m.item}</div><div className="mono tiny muted">{m.mo}
+                          {s.stoppages.length ? <span className="pill warn" style={{ marginLeft: 6 }}><span className="glyph">◆</span>{s.stoppages.length} stoppage</span> : null}
+                          {s.rejections.length ? <span className="pill risk" style={{ marginLeft: 6 }}><span className="glyph">▲</span>{s.rejections.length} rejection</span> : null}
+                        </div></td>
+                        <td className="mono tiny">{m.schedStart || "—"} → {m.schedEnd || "—"}</td>
+                        <td className="tiny muted">{routeProgress(m.route)}</td>
+                        <td>{held ? <State level="blocked" text={"Held — " + m.waitingFor.slice(9)} /> : moPill(s.status)}</td>
+                        <td>{s.status === "stopped"
+                          ? <span className={`pill ${cl.cls === "on-track" ? "ok" : cl.cls}`}><span className="glyph">{cl.glyph}</span>{cl.label}</span>
+                          : <span className="tiny muted">—</span>}</td>
+                        <td>
+                          <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", flexWrap: "wrap" }}>
+                            {s.status === "started" && !held ? <button className="btn sm" onClick={() => stop(m)}>Stop</button> : null}
+                            {s.status === "scheduled" ? <button className="btn sm" onClick={() => start(m)}>Start</button> : null}
+                            {s.status !== "stopped" ? <button className="btn sm ghost" onClick={() => openCap(m.mo, "stoppage")}>Stoppage</button> : null}
+                            {s.status !== "stopped" ? <button className="btn sm ghost" onClick={() => openCap(m.mo, "rejection")}>Reject</button> : null}
+                            {s.status === "stopped" ? <span className="tiny muted">closed</span> : null}
+                          </div>
+                        </td>
+                      </tr>
+                      {capturing && (
+                        <tr>
+                          <td colSpan={6} style={{ background: "var(--page)" }}>
+                            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                              <span className="tiny muted" style={{ whiteSpace: "nowrap" }}>{cap.type === "stoppage" ? "Record stoppage:" : "Record rejection:"}</span>
+                              {cap.type === "stoppage" ? (
+                                <>
+                                  <input style={inp} placeholder="Reason (e.g. seal leak — line held)" value={cap.a} onChange={(e) => setCap((c) => ({ ...c, a: e.target.value }))} />
+                                  <input style={{ ...inp, flex: "none", width: 90 }} placeholder="Minutes" value={cap.b} onChange={(e) => setCap((c) => ({ ...c, b: e.target.value }))} />
+                                </>
+                              ) : (
+                                <>
+                                  <input style={{ ...inp, flex: "none", width: 70 }} placeholder="Qty" value={cap.a} onChange={(e) => setCap((c) => ({ ...c, a: e.target.value }))} />
+                                  <input style={inp} placeholder="Reason (e.g. mechanical seal — scrapped)" value={cap.b} onChange={(e) => setCap((c) => ({ ...c, b: e.target.value }))} />
+                                </>
+                              )}
+                              <button className="btn sm" onClick={() => addCapture(m)}>Add</button>
+                              <button className="btn sm ghost" onClick={closeCap}>Cancel</button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+      })}
+      <div className="tiny muted" style={{ padding: "4px 2px" }}>A closed manufacturing order is not reopened here — corrections are made in SAP Business One (§11, assumption 10).</div>
+      <ExceptionsCard area="shopfloor" title="Exceptions handled on the shop floor" cite="§11" />
+    </div>
+  );
+}
+
+/* ============================================================
+   V6 Phase C — dashboards (§14.1), where orders stand (§14.3),
+   integration & audit (§16.1)
+   ============================================================ */
+function toDate(s) {
+  if (!s || s === "—") return null;
+  const d = s.split(" ")[0];
+  const [dd, mm, yy] = d.split("-").map(Number);
+  if (!dd || !mm || !yy) return null;
+  return new Date(yy < 100 ? 2000 + yy : yy, mm - 1, dd);
+}
+function daysBetween(a, b) {
+  const A = toDate(a), B = toDate(b);
+  if (!A || !B) return null;
+  return Math.round((A - B) / 86400000);
+}
+/* Committed delivery date in force (from the firmed schedule, §12.1). */
+function committedOf(o) { return o.revised && o.revised !== "—" ? o.revised : o.promise; }
+/* Scheduled end of the top-level finished-goods MO for an order. */
+function scheduledEndOf(oa) {
+  const list = (MOS[oa] || []).filter((m) => m.schedEnd);
+  if (!list.length) return null;
+  return list.map((m) => m.schedEnd).sort((a, b) => cmpDate(a, b)).pop();
+}
+
+/* ---- Reports & dashboards (§14.1) ---- */
+function Dashboards({ open }) {
+  const mos = allMOs();
+  const stopped = mos.filter((m) => m.status === "stopped");
+
+  // (1) On-time delivery — component level (MO stop vs scheduled end)
+  const comp = stopped.map((m) => ({ m, d: daysBetween(m.stopAt, m.schedEnd) }));
+  const compOnTime = comp.filter((c) => c.d != null && c.d <= 0).length;
+  // (1) On-time — sales-order-line level (promise vs closure of top FG MO)
+  const lineRows = ORDERS.filter((o) => (MOS[o.oa] || []).some((m) => m.status === "stopped"))
+    .map((o) => {
+      const fg = (MOS[o.oa] || []).find((m) => m.status === "stopped");
+      return { o, promise: o.promise, closed: fg.stopAt, d: daysBetween(fg.stopAt, o.promise) };
+    });
+  const lineOnTime = lineRows.filter((r) => r.d != null && r.d <= 0).length;
+
+  // (3) Utilisation & OEE
+  const load = wcLoad();
+  const centres = WORKCENTRES.filter((w) => !w.subcontract);
+  const util = centres.map((w) => ({ w, pct: wcAvailable(w, "week") ? Math.round((load[w.id] || 0) / wcAvailable(w, "week") * 100) : 0 }))
+    .sort((a, b) => b.pct - a.pct);
+  const stoppages = mos.reduce((s, m) => s + m.stoppages.length, 0);
+  const rejections = mos.reduce((s, m) => s + m.rejections.length, 0);
+  const avA = 90, avP = 92, avQ = rejections ? 94 : 98;
+  const oee = Math.round(avA * avP * avQ / 10000);
+
+  // (2) Job status
+  const byStatus = { started: 0, scheduled: 0, stopped: 0, unscheduled: 0 };
+  for (const m of mos) byStatus[m.status] = (byStatus[m.status] || 0) + 1;
+
+  return (
+    <div className="page">
+      <div className="page-head">
+        <div>
+          <h1 className="title">Dashboards</h1>
+          <div className="subtitle">On-time delivery, job status, machine utilisation &amp; OEE, and capacity against load. Every figure opens the records behind it.</div>
+        </div>
+        <button className="btn ghost">Export to Excel</button>
+      </div>
+
+      <div className="grid2">
+        <div className="stack">
+          {/* Dashboard 1 — on-time */}
+          <div className="card">
+            <div className="card-head"><span className="card-title">On-time delivery</span><span className="tiny muted">Scheduled vs actual completion</span></div>
+            <div className="duo">
+              <div className="card-pad">
+                <div className="tiny muted">Component level</div>
+                <div className="kpi-v">{stopped.length ? Math.round(compOnTime / stopped.length * 100) : 0}%</div>
+                <div className="tiny muted">{compOnTime} of {stopped.length} MOs stopped on or before schedule</div>
+              </div>
+              <div className="card-pad">
+                <div className="tiny muted">Sales-order-line level</div>
+                <div className="kpi-v">{lineRows.length ? Math.round(lineOnTime / lineRows.length * 100) : 0}%</div>
+                <div className="tiny muted">{lineOnTime} of {lineRows.length} lines closed by promise date</div>
+              </div>
+            </div>
+            <table className="tbl">
+              <thead><tr><th>OA</th><th>MO</th><th>Scheduled end</th><th>Stopped</th><th>Delta</th></tr></thead>
+              <tbody>
+                {comp.map((c) => (
+                  <tr key={c.m.mo} className="click" onClick={() => open(c.m.order.oa)}>
+                    <td className="mono link">{c.m.order.oa}</td>
+                    <td className="mono tiny">{c.m.mo}</td>
+                    <td className="mono tiny">{c.m.schedEnd}</td>
+                    <td className="mono tiny">{c.m.stopAt}</td>
+                    <td className="mono tiny" style={{ color: c.d > 0 ? "var(--risk)" : "var(--ok)" }}>{c.d > 0 ? `+${c.d}d late` : `${c.d}d`}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        );
-      })}
-    </div>
-  );
-}
 
-function Operator() {
-  const [phase, setPhase] = useState("idle");
-  const [result, setResult] = useState(null);
-  const [qty, setQty] = useState(1);
-  const job = JOBS[0];
-  const reset = () => { setPhase("idle"); setResult(null); setQty(1); };
-
-  return (
-    <div className="page">
-      <div className="op-wrap">
-        <div className="op-card">
-          <div className="op-head">
-            <div className="op-job mono">OA {job.oa}</div>
-            <div className="op-oper">{job.op} · {job.section}</div>
-            <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
-              <span className="pill info">Drawing R1</span>
-              <span className="pill">Quantity {job.qty}</span>
-              <span className="pill">{job.job}</span>
-            </div>
+          {/* Delivery performance — reasons for misses (§12.1, §14) */}
+          <div className="card">
+            <div className="card-head"><span className="card-title">Delivery performance — reasons for misses</span><span className="tiny muted">Committed vs promise, with the reason recorded (§12.1)</span></div>
+            {(() => {
+              const slipped = ORDERS.filter((o) => o.revised && o.promise && o.revised !== o.promise && o.revised !== "—");
+              const tally = {};
+              slipped.forEach((o) => { const t = (o.exceptions && o.exceptions[0] && o.exceptions[0].t) || "Other"; tally[t] = (tally[t] || 0) + 1; });
+              const rows = Object.entries(tally).sort((a, b) => b[1] - a[1]);
+              const max = Math.max(1, ...rows.map((r) => r[1]));
+              return (
+                <>
+                  {rows.map(([r, n]) => (
+                    <div key={r} style={{ padding: "10px 20px", borderBottom: "1px solid var(--line)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}><span>{r}</span><span className="mono muted">{n} order{n > 1 ? "s" : ""}</span></div>
+                      <div className="bar"><i style={{ width: `${(n / max) * 100}%` }} /></div>
+                    </div>
+                  ))}
+                  <div className="card-pad tiny muted">{slipped.length} of {ORDERS.length} orders committed later than promised — countable because every delay is an exception with a type.</div>
+                </>
+              );
+            })()}
           </div>
-          <div className="op-body">
-            {phase === "idle" && (<>
-              <div className="op-state"><div className="op-state-k">Current</div><div className="op-state-v">Not started</div></div>
-              <button className="op-btn" onClick={() => setPhase("running")}>Start job</button>
-              <button className="op-sec">Report a problem</button>
-            </>)}
-            {phase === "running" && (<>
-              <div className="op-state"><div className="op-state-k">Started at</div><div className="op-state-v mono">08:15 AM</div></div>
-              <button className="op-btn stop" onClick={() => setPhase("result")}>Stop job</button>
-              <button className="op-sec">Report a problem</button>
-            </>)}
-            {phase === "result" && (<>
-              <div className="op-state"><div className="op-state-k">Ran for</div><div className="op-state-v mono">2 h 10 min</div></div>
-              <div style={{ fontWeight: 600, marginBottom: 12 }}>What happened?</div>
-              <div className="op-choices">
-                {["Completed", "Rework", "Scrap", "Downtime"].map((r) => (
-                  <button key={r} className={`op-choice ${result === r ? "pick" : ""}`} onClick={() => setResult(r)}>{r}</button>
-                ))}
+
+          {/* Dashboard 3 — utilisation & OEE */}
+          <div className="card">
+            <div className="card-head"><span className="card-title">Machine utilisation &amp; OEE</span><span className="tiny muted">OEE takes stoppages &amp; rejections into account (§14.1.3)</span></div>
+            <div className="duo">
+              <div className="card-pad"><div className="tiny muted">Factory OEE</div><div className="kpi-v">{oee}%</div><div className="tiny muted">Avail {avA}% · Perf {avP}% · Qual {avQ}%</div></div>
+              <div className="card-pad"><div className="tiny muted">Logged this period</div><div className="kpi-v">{stoppages}<span className="tiny muted"> stoppages</span></div><div className="tiny muted">{rejections} rejection{rejections === 1 ? "" : "s"}</div></div>
+            </div>
+            {util.slice(0, 6).map((u) => (
+              <div key={u.w.id} style={{ padding: "10px 20px", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                  <span>{u.w.name}</span><span className="mono muted">{u.pct}%</span>
+                </div>
+                <div className="bar"><i className={u.pct > 100 ? "red" : ""} style={{ width: `${Math.min(u.pct, 100)}%` }} /></div>
               </div>
-              {result && (<>
-                <div className="qty">
-                  <button onClick={() => setQty(Math.max(0, qty - 1))} aria-label="Reduce quantity">−</button>
-                  <div className="qty-v mono">{qty}</div>
-                  <button onClick={() => setQty(qty + 1)} aria-label="Increase quantity">+</button>
-                </div>
-                <div className="tiny muted" style={{ textAlign: "center", marginBottom: 14 }}>
-                  Quantity {result.toLowerCase()}, out of {job.qty}
-                </div>
-              </>)}
-              <button className="op-btn" disabled={!result} onClick={() => setPhase("done")} style={{ marginTop: 6 }}>Confirm</button>
-            </>)}
-            {phase === "done" && (
-              <div className="done-note">
-                <div className="done-tick">✓</div>
-                <div style={{ fontWeight: 600, fontSize: 16 }}>
-                  {qty} {result === "Completed" ? "completed" : result.toLowerCase()} on {job.op}
-                </div>
-                <div className="muted" style={{ marginTop: 6 }}>
-                  Recorded against OA {job.oa}. Fabrication has been told the flanges are ready.
-                </div>
-                <button className="btn ghost" style={{ marginTop: 18 }} onClick={reset}>Next job</button>
-              </div>
-            )}
+            ))}
           </div>
         </div>
-        <div className="tiny muted" style={{ textAlign: "center", marginTop: 14 }}>
-          Signed in as P. Jadhav on shared device SHOP-02. Work is saved even if the network drops.
+
+        <div className="stack">
+          {/* Dashboard 2 — job status */}
+          <div className="card card-pad">
+            <h2 className="sec">Job status</h2>
+            {[["Started", byStatus.started, ""], ["Stopped (closed)", byStatus.stopped, ""], ["Scheduled", byStatus.scheduled, ""], ["Unscheduled", byStatus.unscheduled, "warn"]].map(([k, v, c]) => (
+              <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
+                <span className="muted">{k}</span>
+                <b style={{ color: c === "warn" ? "var(--warn)" : "inherit" }}>{v}</b>
+              </div>
+            ))}
+          </div>
+
+          {/* Dashboard 4 — capacity vs load */}
+          <div className="card card-pad">
+            <h2 className="sec">Capacity vs load</h2>
+            {(() => {
+              const over = centres.filter((w) => (load[w.id] || 0) > wcAvailable(w, "week"));
+              const tl = centres.reduce((s, w) => s + (load[w.id] || 0), 0);
+              const ta = centres.reduce((s, w) => s + wcAvailable(w, "week"), 0);
+              return (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}><span className="muted">Overloaded centres (week)</span><b style={{ color: over.length ? "var(--risk)" : "var(--ok)" }}>{over.length}</b></div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}><span className="muted">Load</span><b className="mono">{tl} h</b></div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}><span className="muted">Available</span><b className="mono">{ta} h</b></div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}><span className="muted">Spare</span><b className="mono" style={{ color: ta - tl < 0 ? "var(--risk)" : "inherit" }}>{ta - tl} h</b></div>
+                </>
+              );
+            })()}
+          </div>
+          <div className="note">Reports export to Excel. Excel is an export format only — no data is taken from it (assumption 7).</div>
         </div>
       </div>
     </div>
   );
 }
 
-function Quality({ open }) {
-  const holds = [];
-  ORDERS.forEach((o) => (o.operations || []).forEach((op) => {
-    if (op.hold && op.s !== "Passed") holds.push({ ...op, o });
-  }));
-
+/* ---- Where each order stands (§14.3) ---- */
+function OrderStands({ open }) {
   return (
     <div className="page">
       <div className="page-head">
         <div>
-          <h1 className="title">Quality</h1>
-          <div className="subtitle">A hold point is a stop, not a status. Nothing downstream starts until it passes.</div>
+          <h1 className="title">Where each order stands</h1>
+          <div className="subtitle">One line per sales-order line: committed date, scheduled end, the manufacturing orders under it and the closure position.</div>
         </div>
       </div>
 
       <div className="card" style={{ marginBottom: 16 }}>
-        <div className="card-head">
-          <span className="card-title">Hold points</span>
-          <span className="tiny muted">Contractual inspections on engineered orders</span>
-        </div>
+        <div className="card-head"><span className="card-title">The order process at a glance</span><span className="tiny muted">The five stages the platform follows (§8)</span></div>
         <table className="tbl">
-          <thead><tr><th>OA</th><th>Inspection</th><th>Planned</th><th>Inspector</th><th>Status</th><th /></tr></thead>
+          <thead><tr><th style={{ width: 28 }}>#</th><th>Stage</th><th>What happens</th><th>Main actors</th></tr></thead>
           <tbody>
-            {holds.map((h, i) => (
-              <tr key={i} className="click" onClick={() => open(h.o.oa)}>
-                <td className="mono link">{h.o.oa}</td>
-                <td>{h.n}</td>
-                <td className="mono tiny">{h.start}</td>
-                <td className="tiny muted">{h.o.insp === "Client" ? "Customer inspector required" : "Nadi"}</td>
-                <td><State level={h.s === "Waiting" ? "warn" : "watch"} text={h.s} /></td>
-                <td><button className="btn sm">Schedule</button></td>
+            {ORDER_STAGES.map((s, i) => (
+              <tr key={s.n}>
+                <td className="mono tiny muted">{i + 1}</td>
+                <td>{s.n}</td>
+                <td className="tiny muted">{s.what}</td>
+                <td className="tiny muted">{s.who}</td>
               </tr>
             ))}
           </tbody>
@@ -1776,199 +2634,266 @@ function Quality({ open }) {
       </div>
 
       <div className="card">
-        <div className="card-head"><span className="card-title">Failures and rework</span></div>
-        <div className="att">
-          <div className="att-bar risk" />
-          <div className="att-body">
-            <div className="att-top">
-              <span className="att-title">Third leak on the same unit</span>
-              <button className="link mono tiny" onClick={() => open("18616")}>OA 18616</button>
-            </div>
-            <div className="att-sub">
-              Failed at customer inspection 20-08-2026, seal replaced 22-08-2026, leak returned after reassembly 28-08-2026.
-              Each failure is its own record, so the pattern is countable.
-            </div>
-          </div>
-          <button className="btn sm">Open analysis</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Dispatch({ open }) {
-  const list = ORDERS.filter((o) => ["20736", "19415", "19962"].includes(o.oa));
-  return (
-    <div className="page">
-      <div className="page-head">
-        <div>
-          <h1 className="title">Dispatch</h1>
-          <div className="subtitle">Five conditions. The screen names the one that is missing.</div>
-        </div>
-      </div>
-      {list.map((o) => {
-        const openCount = o.gate.filter((g) => g.s === "fail").length;
-        return (
-          <div className="card" key={o.oa} style={{ marginBottom: 14 }}>
-            <div className="card-head">
-              <span className="card-title">
-                <button className="link mono" onClick={() => open(o.oa)}>OA {o.oa}</button>
-                <span className="muted" style={{ fontWeight: 400 }}>
-                  {" "}· {o.customer} · {o.qty} unit{o.qty > 1 ? "s" : ""} · ₹{o.amount}
-                </span>
-              </span>
-              {openCount === 0
-                ? <State level="on-track" text="Cleared to dispatch" />
-                : <State level={o.state === "blocked" ? "blocked" : "warn"} text={`${openCount} open`} />}
-            </div>
-            <GateBody order={o} />
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function Reports({ open }) {
-  return (
-    <div className="page">
-      <div className="page-head">
-        <div>
-          <h1 className="title">Where attention is needed</h1>
-          <div className="subtitle">Live, and every number opens the orders behind it.</div>
-        </div>
-        <button className="btn ghost">Export</button>
-      </div>
-
-      <div className="kpis" style={{ marginBottom: 16 }}>
-        <div className="kpi"><div className="kpi-k">Order in hand</div><div className="kpi-v">₹8.20 cr</div><div className="kpi-s">Derived, not typed</div></div>
-        <div className="kpi"><div className="kpi-k">Billed but not moved</div><div className="kpi-v" style={{ color: "var(--warn)" }}>₹16.75 L</div><div className="kpi-s">8 units on one order</div></div>
-        <div className="kpi"><div className="kpi-k">Delivered on promise</div><div className="kpi-v">82%</div><div className="kpi-s">Last 30 days</div></div>
-        <div className="kpi"><div className="kpi-k">PO cleared to OA released</div><div className="kpi-v">9<span className="tiny muted"> days avg</span></div><div className="kpi-s">Worst case 15 days</div></div>
-      </div>
-
-      <div className="grid2">
-        <div className="card">
-          <div className="card-head"><span className="card-title">Why orders slipped</span></div>
-          {[["Motor not received", 6, 60], ["Bought-out shortage", 4, 40], ["Quality rework", 3, 30], ["Customer-scope material", 2, 20], ["Drawing revision", 2, 20]].map(([r, n, w]) => (
-            <div key={r} style={{ padding: "12px 20px", borderBottom: "1px solid var(--line)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <span>{r}</span><span className="mono muted">{n} orders</span>
-              </div>
-              <div className="bar"><i style={{ width: `${w}%` }} /></div>
-            </div>
-          ))}
-          <div className="card-pad tiny muted">
-            Countable because every delay is an exception with a type, rather than a sentence inside a status cell.
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-head"><span className="card-title">Needs a decision</span></div>
-          {ATTENTION.filter((a) => a.roles.includes("management")).map((a) => (
-            <div className="att" key={a.id}>
-              <div className={`att-bar ${a.level}`} />
-              <div className="att-body">
-                <div className="att-top">
-                  <span className="att-title">{a.title}</span>
-                  <button className="link mono tiny" onClick={() => open(a.oa)}>OA {a.oa}</button>
-                </div>
-                <div className="att-sub">{a.sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function fmtCr(lakhs) { return "₹" + (lakhs / 100).toFixed(2) + " cr"; }
-function fmtL(lakhs) { return "₹" + lakhs.toLocaleString("en-IN") + " L"; }
-
-function Revenue() {
-  const actuals = REVENUE.months.filter((m) => m.actual);
-  const tgt = actuals.reduce((a, m) => a + m.target, 0);
-  const inv = actuals.reduce((a, m) => a + m.invoiced, 0);
-  const short = inv - tgt;
-  const sign = (n) => (n < 0 ? "−" : "+") + "₹" + Math.abs(n).toLocaleString("en-IN") + " L";
-
-  return (
-    <div className="page">
-      <div className="page-head">
-        <div>
-          <h1 className="title">Revenue plan</h1>
-          <div className="subtitle">Monthly target against what was actually billed. From the Pending Order Summary — derived from orders, not kept by hand.</div>
-        </div>
-        <span className="tiny muted">Report date {REVENUE.reportDate} · Domestic · FY 2026-27</span>
-      </div>
-
-      <div className="kpis" style={{ marginBottom: 16 }}>
-        <div className="kpi"><div className="kpi-k">Order in hand</div><div className="kpi-v">{fmtCr(REVENUE.orderInHand)}</div><div className="kpi-s">Confirmed, not yet billed</div></div>
-        <div className="kpi"><div className="kpi-k">Billed, not moved</div><div className="kpi-v" style={{ color: "var(--warn)" }}>₹16.75 L</div><div className="kpi-s">8 units on OA 19415</div></div>
-        <div className="kpi"><div className="kpi-k">Invoiced YTD</div><div className="kpi-v">{fmtL(inv)}</div><div className="kpi-s">against {fmtL(tgt)} target</div></div>
-        <div className="kpi"><div className="kpi-k">Shortfall YTD</div><div className="kpi-v" style={{ color: short < 0 ? "var(--risk)" : "var(--ok)" }}>{sign(short)}</div><div className="kpi-s">Invoiced minus target</div></div>
-      </div>
-
-      <div className="grid2">
-        <div className="card">
-          <div className="card-head"><span className="card-title">Target vs billed, by month</span><span className="tiny muted">₹ lakhs</span></div>
-          <div className="rev-scroll">
-            <table className="tbl rev-tbl">
-              <thead><tr><th>Month</th><th className="num">Target</th><th className="num">Invoiced</th><th className="num">Shortfall</th><th style={{ width: 120 }} /></tr></thead>
-              <tbody>
-                {REVENUE.months.map((m) => {
-                  const s = m.invoiced - m.target;
-                  return (
-                    <tr key={m.m}>
-                      <td>{m.m}{!m.actual && <span className="tiny soft"> · planned</span>}</td>
-                      <td className="num">{m.target.toLocaleString("en-IN")}</td>
-                      <td className="num">{m.actual ? m.invoiced.toLocaleString("en-IN") : <span className="soft">—</span>}</td>
-                      <td className={`num ${m.actual ? (s < 0 ? "neg" : "pos") : ""}`}>{m.actual ? (s < 0 ? "−" : "+") + Math.abs(s).toLocaleString("en-IN") : <span className="soft">—</span>}</td>
-                      <td>{m.actual && <div className="bar"><i className={s < 0 ? "red" : ""} style={{ width: `${Math.min(100, Math.round(m.invoiced / m.target * 100))}%` }} /></div>}</td>
-                    </tr>
-                  );
-                })}
-                <tr className="total">
-                  <td>YTD (billed months)</td>
-                  <td className="num">{tgt.toLocaleString("en-IN")}</td>
-                  <td className="num">{inv.toLocaleString("en-IN")}</td>
-                  <td className={`num ${short < 0 ? "neg" : "pos"}`}>{(short < 0 ? "−" : "+") + Math.abs(short).toLocaleString("en-IN")}</td>
-                  <td />
+        <table className="tbl">
+          <thead><tr><th>OA</th><th>Customer</th><th>Committed</th><th>Scheduled end</th><th>Manufacturing orders</th><th>Closure</th></tr></thead>
+          <tbody>
+            {ORDERS.map((o) => {
+              const list = MOS[o.oa] || [];
+              const se = scheduledEndOf(o.oa);
+              const started = list.filter((m) => m.status === "started").length;
+              const stoppedN = list.filter((m) => m.status === "stopped").length;
+              const posted = list.filter((m) => m.closurePosted === true).length;
+              const pending = list.filter((m) => m.closurePosted === "pending").length;
+              return (
+                <tr key={o.oa} className="click" onClick={() => open(o.oa)}>
+                  <td className="mono link">{o.oa}</td>
+                  <td>{o.customer}<div className="tiny muted">{o.model}</div></td>
+                  <td className="mono tiny">{committedOf(o)}</td>
+                  <td className="mono tiny">{se || "—"}</td>
+                  <td className="tiny">
+                    {list.length === 0
+                      ? <span className="muted">No MO — {o.code === "SERVICE" ? "service / spare line" : o.lifecycle === "cancelled" ? "cancelled" : "—"}</span>
+                      : <span>{list.length} MO · {stoppedN} closed · {started} running</span>}
+                  </td>
+                  <td>{pending
+                    ? <span className="pill warn"><span className="glyph">◴</span>{pending} not posted</span>
+                    : posted
+                    ? <span className="pill ok"><span className="glyph">✓</span>{posted} in SAP</span>
+                    : <span className="tiny muted">—</span>}</td>
                 </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Integration & audit (§16.1) ---- */
+const IFACE_DIR = { from: "← from SAP", to: "→ to SAP", both: "↔ both ways" };
+function Integration({ toast }) {
+  return (
+    <div className="page">
+      <div className="page-head">
+        <div>
+          <h1 className="title">Integration &amp; audit</h1>
+          <div className="subtitle">Every message to and from SAP Business One — numbered, idempotent, retried on failure, and searchable.</div>
+        </div>
+        <div className="search" style={{ maxWidth: 280 }}>
+          <span className="muted">⌕</span><input placeholder="Search by document, order, user or time" />
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-head"><span className="card-title">Interfaces</span><span className="tiny muted">The agreed SAP Business One connections</span></div>
+        <table className="tbl">
+          <thead><tr><th>Connection</th><th>Direction</th><th>What passes</th><th>State</th></tr></thead>
+          <tbody>
+            {INTERFACES.map((f) => (
+              <tr key={f.n}>
+                <td>{f.n}</td>
+                <td className="tiny muted">{IFACE_DIR[f.dir]}</td>
+                <td className="tiny muted">{f.passes}</td>
+                <td>{f.st === "ok" ? <State level="on-track" text="Connected" /> : f.st === "retry" ? <State level="warn" text="Retrying" /> : <State level="blocked" text="Failed" />}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="card">
+        <div className="card-head"><span className="card-title">Message audit trail</span><span className="tiny muted">Sending the same message twice cannot create two documents</span></div>
+        <table className="tbl">
+          <thead><tr><th>Message</th><th>Document</th><th>Order / ref</th><th>When</th><th>State</th><th></th></tr></thead>
+          <tbody>
+            {AUDIT.map((a) => (
+              <tr key={a.id}>
+                <td className="mono tiny">{a.id}<div className="tiny muted">{IFACE_DIR[a.dir]} · try {a.tries}</div></td>
+                <td>{a.doc}<div className="tiny muted">{a.note}</div></td>
+                <td className="mono tiny">{a.order !== "—" ? a.order : ""} {a.ref}</td>
+                <td className="mono tiny">{a.when}</td>
+                <td>{a.st === "posted" ? <State level="on-track" text="Posted" /> : a.st === "retry" ? <State level="warn" text="Retrying" /> : <State level="blocked" text="Failed" />}</td>
+                <td>{a.st !== "posted" ? <button className="btn sm ghost" onClick={() => toast(`${a.id} re-sent to SAP Business One`)}>Retry</button> : null}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Notifications (§15) ---- */
+function Notifications({ role, open }) {
+  const items = NOTIFICATIONS.filter((n) => n.roles.includes(role));
+  const rules = NOTIF_RULES[role] || [];
+  return (
+    <div className="page">
+      <div className="page-head">
+        <div>
+          <h1 className="title">Notifications</h1>
+          <div className="subtitle">Configurable per role; the thresholds that fire them are set by Nadi Airtechnics (§15).</div>
+        </div>
+      </div>
+      <div className="grid2">
+        <div className="card">
+          <div className="card-head"><span className="card-title">For you now</span><span className="tiny muted">{items.length}</span></div>
+          {items.length === 0
+            ? <div className="empty"><b>No notifications</b>Nothing has crossed a threshold for your role.</div>
+            : items.map((n) => (
+              <div className="att" key={n.id}>
+                <div className={`att-bar ${n.level}`} />
+                <div className="att-body">
+                  <div className="att-top">
+                    <span className="att-title">{n.title}</span>
+                    {n.oa ? <button className="link mono tiny" onClick={() => open(n.oa)}>OA {n.oa}</button> : null}
+                  </div>
+                  <div className="att-sub">{n.sub}</div>
+                </div>
+                <span className="mono tiny muted">{n.when}</span>
+              </div>
+            ))}
+        </div>
+        <div className="card card-pad">
+          <h2 className="sec">What you're notified about</h2>
+          {rules.map((r) => (
+            <div key={r} style={{ display: "flex", gap: 8, padding: "6px 0", alignItems: "flex-start" }}>
+              <span className="muted">•</span><span>{r}</span>
+            </div>
+          ))}
+          <div className="note" style={{ marginTop: 10 }}>Triggers, dashboards and reports are configurable for Planning, Production, Projects and Management. Thresholds are to be confirmed (§15, §17).</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Administration (§6 users/roles & thresholds, §5.3 ownership,
+       §16.2 mobile, §17 points to confirm) ---- */
+function Admin({ toast }) {
+  return (
+    <div className="page">
+      <div className="page-head">
+        <div>
+          <h1 className="title">Administration</h1>
+          <div className="subtitle">Users and roles, thresholds, record ownership, mobile and the open points — the System administrator's surface.</div>
+        </div>
+      </div>
+
+      <div className="grid2">
+        <div className="stack">
+          <div className="card">
+            <div className="card-head"><span className="card-title">Users &amp; roles</span><span className="tiny muted">Access is by role (§6)</span></div>
+            <table className="tbl">
+              <thead><tr><th>User</th><th>Role</th><th>Status</th></tr></thead>
+              <tbody>
+                {USERS.map((u) => (
+                  <tr key={u.name}>
+                    <td>{u.name}</td>
+                    <td className="tiny muted">{(ROLES[u.role] && ROLES[u.role].label) || u.role}</td>
+                    <td><State level={u.active ? "on-track" : "warn"} text={u.active ? "Active" : "Disabled"} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="card-pad">
+              {USER_COUNTS.map((c) => (
+                <div key={c.role} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0" }}>
+                  <span className="muted tiny">{c.role}</span>
+                  <span className="mono tiny">{c.planned}{c.note ? <span className="muted"> · {c.note}</span> : null}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-head"><span className="card-title">Thresholds</span><span className="tiny muted">Set by Nadi Airtechnics (§15, §17)</span></div>
+            <table className="tbl">
+              <thead><tr><th>Trigger</th><th>Threshold</th><th></th></tr></thead>
+              <tbody>
+                {THRESHOLDS.map((t) => (
+                  <tr key={t.k}>
+                    <td>{t.k}{t.tbc ? <span className="op-hold-tag" style={{ marginLeft: 6 }}>to confirm</span> : null}</td>
+                    <td className="tiny muted">{t.v}</td>
+                    <td><button className="btn sm ghost" onClick={() => toast(`Threshold "${t.k}" — set by Nadi Airtechnics`)}>Edit</button></td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          <div className="card-pad tiny muted">Every month has run short of target. The operational cause is on the Orders spine — motor shortages, customer-scope delays, and billed-but-not-moved units.</div>
+
+          <div className="card">
+            <div className="card-head"><span className="card-title">Who owns which record</span><span className="tiny muted">Binding SAP-vs-platform position (§5.3)</span></div>
+            <table className="tbl">
+              <thead><tr><th>Record</th><th>System of record</th></tr></thead>
+              <tbody>
+                {OWNERSHIP.map((o) => (
+                  <tr key={o.rec}>
+                    <td>{o.rec}<div className="tiny muted">{o.note}</div></td>
+                    <td><span className={`pill ${o.sys === "Platform" ? "info" : "hollow"}`}>{o.sys}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="card">
+            <div className="card-head"><span className="card-title">How the platform is put together</span><span className="tiny muted">The six layers (§5.2)</span></div>
+            <table className="tbl">
+              <thead><tr><th>Layer</th><th>What it does</th></tr></thead>
+              <tbody>
+                {LAYERS.map((l) => (
+                  <tr key={l.n}><td>{l.n}</td><td className="tiny muted">{l.what}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="stack">
-          <div className="card card-pad">
-            <h2 className="sec">Order in hand by entity</h2>
-            {REVENUE.entities.map((e) => (
-              <div key={e.k} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
-                <span className="muted">{e.k}</span><b className="mono">{e.v}</b>
+          <div className="card">
+            <div className="card-head"><span className="card-title">Mobile access</span><span className="tiny muted">To be confirmed (§16.2)</span></div>
+            {MOBILE.map((m) => (
+              <div key={m.role} className="sub" style={{ alignItems: "flex-start" }}>
+                <State level="watch" text={m.role} />
+                <div style={{ flex: 1 }} className="tiny muted">{m.items}</div>
               </div>
             ))}
           </div>
-          <div className="card card-pad">
-            <h2 className="sec">Inventory value</h2>
-            {REVENUE.inventory.map((e) => (
-              <div key={e.k} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0" }}>
-                <span className="muted">{e.k}</span><b className="mono">{e.v}</b>
+
+          <div className="card">
+            <div className="card-head"><span className="card-title">Points to confirm</span><span className="tiny muted">{TOCONFIRM.length} open (§17)</span></div>
+            {["Scheduling & capacity", "Shop floor & dashboards", "Systems & data", "Process details", "Baselines"].map((g) => {
+              const rows = TOCONFIRM.filter((t) => t.g === g);
+              if (!rows.length) return null;
+              return (
+                <div key={g}>
+                  <div className="sub" style={{ background: "var(--page)" }}><b className="tiny">{g}</b></div>
+                  {rows.map((t, i) => (
+                    <div key={i} style={{ display: "flex", gap: 8, padding: "8px 20px", borderBottom: "1px solid var(--line)" }}>
+                      <span className="muted tiny">○</span><span className="tiny">{t.q}</span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+          <div className="card">
+            <div className="card-head"><span className="card-title">Assumptions</span><span className="tiny muted">{ASSUMPTIONS.length} to confirm before development (§2)</span></div>
+            {ASSUMPTIONS.map((a, i) => (
+              <div key={i} style={{ display: "flex", gap: 8, padding: "7px 20px", borderBottom: "1px solid var(--line)" }}>
+                <span className="mono tiny muted">{i + 1}</span><span className="tiny">{a}</span>
               </div>
             ))}
           </div>
-          <div className="note">Management's billing view used to live in a separate summary tab. Here it reads from the same orders that Planning and Production update.</div>
+          <div className="note">Interface monitoring and message retry live on the <b>Integration &amp; audit</b> screen.</div>
         </div>
       </div>
     </div>
   );
 }
 
-/* ------------------------------------------------------------
-   Shell
-   ------------------------------------------------------------ */
 export default function App() {
   const [role, setRole] = useState("planning");
   const [view, setView] = useState("today");
@@ -1985,26 +2910,31 @@ export default function App() {
   const go = (v) => { setOa(null); setView(v); };
   const changeRole = (r) => { setRole(r); setOa(null); setView(ROLES[r].nav[0]); };
   const postComment = (oaId, entry) => setDisc((d) => {
-    const cur = d[oaId] || { stances: {}, comments: [] };
-    const stances = entry.stance ? { ...cur.stances, [entry.role]: entry.stance } : cur.stances;
+    const cur = d[oaId] || { comments: [] };
     const comment = { id: "u" + Date.now(), ...entry };
-    return { ...d, [oaId]: { stances, comments: [comment, ...cur.comments] } };
+    return { ...d, [oaId]: { ...cur, comments: [comment, ...cur.comments] } };
   });
 
-  const counts = { today: attn, orders: ORDERS.length, planning: 6, supply: 3, production: 5, quality: 4, dispatch: 3, myjobs: 1 };
+  const moList = allMOs();
+  const schedCount = moList.filter((m) => m.status !== "unscheduled").length;
+  const loadMap = wcLoad();
+  const overCount = WORKCENTRES.filter((w) => !w.subcontract && (loadMap[w.id] || 0) > wcAvailable(w, "week")).length;
+  const notifCount = NOTIFICATIONS.filter((n) => n.roles.includes(role)).length;
+  const counts = { today: attn, schedule: schedCount, capacity: overCount, shopfloor: schedCount, stands: ORDERS.length, dashboards: 4, notifications: notifCount, integration: AUDIT.filter((a) => a.st !== "posted").length, admin: TOCONFIRM.length, orders: ORDERS.length };
 
   let body;
   if (order) body = <Workspace order={order} back={() => setOa(null)} role={role} disc={disc[order.oa]} onPost={postComment} />;
   else if (view === "today") body = <Today role={role} open={open} />;
+  else if (view === "schedule") body = <Schedule open={open} toast={toast} />;
+  else if (view === "capacity") body = <Capacity toast={toast} />;
+  else if (view === "shopfloor") body = <ShopFloor open={open} toast={toast} />;
+  else if (view === "stands") body = <OrderStands open={open} />;
+  else if (view === "dashboards") body = <Dashboards open={open} />;
+  else if (view === "integration") body = <Integration toast={toast} />;
+  else if (view === "notifications") body = <Notifications role={role} open={open} />;
+  else if (view === "admin") body = <Admin toast={toast} />;
   else if (view === "orders") body = <Orders open={open} toast={toast} />;
-  else if (view === "planning") body = <Planning open={open} />;
-  else if (view === "supply") body = <Supply open={open} />;
-  else if (view === "production") body = <Production open={open} />;
-  else if (view === "myjobs") body = <Operator />;
-  else if (view === "quality") body = <Quality open={open} />;
-  else if (view === "dispatch") body = <Dispatch open={open} />;
-  else if (view === "revenue") body = <Revenue />;
-  else body = <Reports open={open} />;
+  else body = <Today role={role} open={open} />;
 
   return (
     <div className="nadi">
